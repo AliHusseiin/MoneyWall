@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description');
-            $table->timestamps();
             $table->unsignedBigInteger('assetID');
             $table->foreign('assetID')->references('assetID')->on('user_Assets');
+            $table->timestamps();
+
         });
     }
 
