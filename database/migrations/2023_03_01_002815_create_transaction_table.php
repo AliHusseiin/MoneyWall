@@ -17,11 +17,11 @@ return new class extends Migration
             $table->text('description');
 
             $table->unsignedBigInteger('sellerID');
-            $table->foreign('sellerID')->references('userID')->on('users');
+            $table->foreign('sellerID')->references('id')->on('users');
             $table->unsignedBigInteger('buyerID');
-            $table->foreign('buyerID')->references('userID')->on('users');
+            $table->foreign('buyerID')->references('id')->on('users');
             $table->unsignedBigInteger('assetID');
-            $table->foreign('assetID')->references('assetID')->on('user_Assets');
+            $table->foreign('assetID')->references('id')->on('user_Assets');
             $table->timestamps();
         });
     }

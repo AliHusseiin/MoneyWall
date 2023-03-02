@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('user_assets', function (Blueprint $table) {
-            $table->id('assetID');
+            $table->id();
             $table->unsignedBigInteger('userID');
-            $table->foreign('userID')->references('userID')->on('users');
+            $table->foreign('userID')->references('id')->on('users');
             $table->timestamps();
         });
     }
