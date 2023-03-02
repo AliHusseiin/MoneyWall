@@ -16,9 +16,13 @@ use App\Http\Controllers\BillController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['prefix'=>'user'], function() {
+    Route::post('/register', [UsersController::class, 'register']);
+    Route::post('/login', [UsersController::class, 'login']);
+    // Route::get('verify/{verificationToken}', [UsersController::class, 'verifyEmail']);
 });
+
+
 Route::get('/profile',[ProfileController::class,'index']);
 // Route::get('/bill',[BillController::class,'index']);
 // Route::post('admin/bill',[BillController::class,'create']);
