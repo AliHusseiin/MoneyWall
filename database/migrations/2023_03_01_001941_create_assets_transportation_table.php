@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('brand');
             $table->integer('cc');
             $table->unsignedBigInteger('assetID');
-            $table->foreign('assetID')->references('assetID')->on('user_Assets');
+            $table->foreign('assetID')->references('id')->on('user_Assets');
             $table->timestamps();
         });
     }
