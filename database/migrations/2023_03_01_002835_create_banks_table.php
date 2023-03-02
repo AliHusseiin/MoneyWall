@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('IBAN');
             $table->string('swift_code');
             $table->unsignedBigInteger('userID');
-            $table->foreign('userID')->references('id')->on('users');
+            $table->foreign('userID')->references('userID')->on('users');
             $table->timestamps();
         });
     }

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('status');
             $table->text('due_time');
             $table->unsignedBigInteger('userID');
-            $table->foreign('userID')->references('id')->on('users');
+            $table->foreign('userID')->references('userID')->on('users');
             $table->timestamps();
         });
     }

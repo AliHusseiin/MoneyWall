@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('exp_date');
             $table->string('CVV');
             $table->unsignedBigInteger('userID');
-            $table->foreign('userID')->references('id')->on('users');
+            $table->foreign('userID')->references('userID')->on('users');
             $table->timestamps();
         });
     }
