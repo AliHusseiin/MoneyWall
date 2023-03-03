@@ -25,7 +25,7 @@ Route::group(['prefix' => 'user'], function () {
     Route::post('/login', [UsersController::class, 'login']);
     // Route::get('verify/{verificationToken}', [UsersController::class, 'verifyEmail']);
 });
-//Route::post('/cards', [CardsController::class, 'add']);
+Route::post('/cards', [CardsController::class, 'add']);
 Route::get('/cards', [CardsController::class, 'getCards']);
 //Route::post('/banks', [BanksController::class, 'add']);
 

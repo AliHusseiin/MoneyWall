@@ -13,4 +13,13 @@ class CardsController extends Controller
         $cards = Card::all();
         return response()->json(["status" => 200, "cards" => $cards]);
     }
+    function add(Request $request)
+    {
+
+        $card = new Card();
+        $card->fill($request->post());
+        $card->save();
+        $cards = Card::all();
+        return response()->json(["status" => 200, "message" => "Cards added!", "cards" => $cards]);
+    }
 }
