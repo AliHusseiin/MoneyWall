@@ -1,5 +1,7 @@
 <?php
 
+
+use App\Http\Controllers\CardsController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -18,12 +20,14 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::group(['prefix'=>'user'], function() {
+Route::group(['prefix' => 'user'], function () {
     Route::post('/register', [UsersController::class, 'register']);
     Route::post('/login', [UsersController::class, 'login']);
     // Route::get('verify/{verificationToken}', [UsersController::class, 'verifyEmail']);
 });
-
+//Route::post('/cards', [CardsController::class, 'add']);
+Route::get('/cards', [CardsController::class, 'getCards']);
+//Route::post('/banks', [BanksController::class, 'add']);
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
