@@ -27,7 +27,7 @@ Route::group(['prefix'=>'user'], function() {
 });
 
 
-Route::get('/profile',[ProfileController::class,'index']);
+Route::get('/{id}/profile',[ProfileController::class,'show']);
 // Route::get('/bill',[BillController::class,'index']);
 // Route::post('admin/bill',[BillController::class,'create']);
 Route::post('/bill',[BillController::class,'store'])->name("bill");;

@@ -18,8 +18,6 @@ return new class extends Migration
             $table->integer('apartment_No');
             $table->integer('floor_No');
             $table->integer('bedrooms');
-
-            $table->timestamps();
             $table->unsignedBigInteger('assetID');
             $table->foreign('assetID')->references('id')->on('user_Assets');
             $table->timestamps();
