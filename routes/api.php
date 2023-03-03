@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'user'], function () {
     Route::post('/register', [UsersController::class, 'register']);
     Route::post('/login', [UsersController::class, 'login']);
-    // Route::get('verify/{verificationToken}', [UsersController::class, 'verifyEmail']);
+    Route::get('verify/{verificationToken}', [UsersController::class, 'verifyEmail']);
 });
 Route::post('/cards', [CardsController::class, 'add']);
 Route::get('/cards', [CardsController::class, 'getCards']);

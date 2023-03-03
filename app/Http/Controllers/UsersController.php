@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Mail\EmailVerification;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -23,10 +25,10 @@ class UsersController extends Controller
         $user->verification_email_token = $verificationToken;
         try{
             $user->save();
-            // Send verification email
 
-            // $url = url('http://127.0.0.1:8000/api/user/verify/' . $verificationToken);
-            // Mail::to($user->email)->send(new VerifyEmail($url));
+            //Send verification email
+            $URL = url('http://127.0.0.1:8000/api/user/verify/' . $verificationToken);
+            Mail::to($user->email)->send(new EmailVerification($URL));
 
             return Response::json("User added to DB ", 201);
         }catch(QueryException $e){
@@ -43,7 +45,7 @@ class UsersController extends Controller
         $user = User::where('email', $email)->first();
         if($user){
             if(Auth::attempt(['email'=>$email,'password'=>$password])){
-                // if($user->email_verified_at){
+                if($user->email_verified_at){
                     // Generate an access token, By default, Sanctum sets the expiration time for an access token to one hour (3600 seconds)
                     $accessToken = $user->createToken("API Access Token")->plainTextToken;
             
@@ -63,14 +65,28 @@ class UsersController extends Controller
                         'access_token' => $accessToken,
                         'refresh_token' => $refreshToken
                     ], 200);  
-                // } else {
-                //     return Response::json("Please Verify your account, Check junk/spam folder.", 404);
-                // }
+                } else {
+                    return Response::json("Please Verify your account, Check junk/spam folder.", 404);
+                }
             }else{
                 return Response::json("password is incorrect!", 400);
             } 
         }else {
             return Response::json("email is not found!", 404);
         }
+    }
+    function verifyEmail(Request $request) {
+        $user = User::where('verification_email_token', $request->verificationToken)->first();
+        if (!$user) {
+            return response()->json(['error' => 'Token not found'], 404);
+        }
+    
+        $user->email_verified_at = Carbon::now();
+        $user->verification_email_token = null;
+        $user->save();
+        if($request->wantsJson()) {
+            return response()->json(['message' => 'Email verified'], 200);
+        }
+        return view('email.ConfirmEmail');
     }
 }
