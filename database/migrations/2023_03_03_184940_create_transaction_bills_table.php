@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('banks', function (Blueprint $table) {
+        Schema::create('transaction_bills', function (Blueprint $table) {
             $table->id();
-            $table->string('account_No');
-            $table->double('balance');
-            $table->string('IBAN');
-            $table->string('swift_code');
+            $table->double("amount");
+            $table->text('description')->nullable();
             $table->unsignedBigInteger('userID');
             $table->foreign('userID')->references('id')->on('users');
+            $table->unsignedBigInteger('billID');
+            $table->foreign('billID')->references('id')->on('bills');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('banks');
+        Schema::dropIfExists('transaction_bills');
     }
 };
