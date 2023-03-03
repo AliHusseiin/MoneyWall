@@ -23,8 +23,9 @@ Route::group(['prefix'=>'user'], function() {
     Route::post('/login', [UsersController::class, 'login']);
     Route::get('verify/{verificationToken}', [UsersController::class, 'verifyEmail']);
 });
+Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
+    Route::post('/refresh', [UsersController::class, 'refresh']);
+});
+Route::middleware(['auth:sanctum', 'can:isAdmin'])->prefix('/admin')->group(function () {
 
-
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+});
