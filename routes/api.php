@@ -27,6 +27,7 @@ Route::group(['prefix' => 'user'], function () {
 });
 Route::post('/cards', [CardsController::class, 'add']);
 Route::get('/cards', [CardsController::class, 'getCards']);
+Route::delete('/cards/{id}', [CardsController::class, 'delete']);
 //Route::post('/banks', [BanksController::class, 'add']);
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
