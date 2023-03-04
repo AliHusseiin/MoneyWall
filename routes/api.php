@@ -31,7 +31,7 @@ Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
     Route::post('/refresh', [UsersController::class, 'refresh']);
     Route::post('/add', [CardsController::class, 'add']);
     Route::get('/cards', [CardsController::class, 'getCards']);
-    //Route::post('/{id}', [CardsController::class, 'show']);
+    Route::post('/cards/{id}', [CardsController::class, 'show']);
     Route::delete('delete/{id}', [CardsController::class, 'destroy']);
 });
 Route::middleware(['auth:sanctum', 'can:isAdmin'])->prefix('/admin')->group(function () {

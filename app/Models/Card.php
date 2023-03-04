@@ -14,7 +14,7 @@ class Card extends Model
         'bank_name' => 'required',
         'balance' => 'required',
         'card_Number' => 'required|digits:16',
-        'exp_date' => 'required',
+        'exp_date' => 'required|date_format:m/y',
         'CVV' => 'required|digits:3'
     ];
 
