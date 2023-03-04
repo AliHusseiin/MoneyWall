@@ -25,19 +25,13 @@ Route::group(['prefix' => 'user'], function () {
     Route::post('/login', [UsersController::class, 'login']);
     Route::get('verify/{verificationToken}', [UsersController::class, 'verifyEmail']);
 });
-Route::group(['prefix' => 'credit-card'], function () {
-    Route::post('/add', [CardsController::class, 'add']);
-    Route::get('/cards', [CardsController::class, 'getCards']);
-    //Route::post('/{id}', [CardsController::class, 'show']);
-    Route::delete('delete/{id}', [CardsController::class, 'destroy']);
 
-});
 
 Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
     Route::post('/refresh', [UsersController::class, 'refresh']);
     Route::post('/add', [CardsController::class, 'add']);
     Route::get('/cards', [CardsController::class, 'getCards']);
-    Route::post('/{id}', [CardsController::class, 'show']);
+    //Route::post('/{id}', [CardsController::class, 'show']);
     Route::delete('delete/{id}', [CardsController::class, 'destroy']);
 });
 Route::middleware(['auth:sanctum', 'can:isAdmin'])->prefix('/admin')->group(function () {
