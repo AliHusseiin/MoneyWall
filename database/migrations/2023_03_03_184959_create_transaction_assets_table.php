@@ -11,17 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transaction', function (Blueprint $table) {
+        Schema::create('transaction_assets', function (Blueprint $table) {
             $table->id();
-            $table->double("amount");      
-            $table->text('description');
-
+            $table->string("type");
+            $table->text('description')->nullable();
+            $table->unsignedBigInteger('assetID');
+            $table->foreign('assetID')->references('id')->on('user_assets');
             $table->unsignedBigInteger('sellerID');
             $table->foreign('sellerID')->references('id')->on('users');
             $table->unsignedBigInteger('buyerID');
             $table->foreign('buyerID')->references('id')->on('users');
-            $table->unsignedBigInteger('assetID');
-            $table->foreign('assetID')->references('id')->on('user_Assets');
             $table->timestamps();
         });
     }
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transaction');
+        Schema::dropIfExists('transaction_assets');
     }
 };
