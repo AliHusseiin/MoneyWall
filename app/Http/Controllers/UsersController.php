@@ -89,4 +89,31 @@ class UsersController extends Controller
         }
         return view('email.ConfirmEmail');
     }
+    function refresh(Request $request){
+        $refreshToken = $request->refresh_token;
+
+        $user = User::where('refresh_token', $refreshToken)
+                    ->where('refresh_token_expiration', '>', Carbon::now())
+                    ->first();
+    
+        if (!$user) {
+            return response()->json(['error' => 'Refresh token is invalid or has expired'], 400);
+        }
+    
+        // Generate a new access token
+        $accessToken = $user->createToken("API Access Token")->plainTextToken;
+    
+        // Update the refresh token and its expiration time
+        $refreshToken = Str::random(60);
+        $refreshTokenExpiration = Carbon::now()->addDays(7);
+        $user->refresh_token = $refreshToken;
+        $user->refresh_token_expiration = $refreshTokenExpiration;
+        $user->save();
+    
+        return response()->json([
+            'access_token' => $accessToken,
+            'refresh_token' => $refreshToken,
+            'refresh_token_expiration' => $refreshTokenExpiration
+        ], 200);
+    }
 }

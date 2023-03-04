@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('bills', function (Blueprint $table) {
             $table->id();
+            $table->string("type");
             $table->string('company_name');
             $table->text('description');
             $table->double('amount');
