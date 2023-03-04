@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->text('description');
             $table->unsignedBigInteger('assetID');
-            $table->foreign('assetID')->references('assetID')->on('user_Assets');
+            $table->foreign('assetID')->references('id')->on('user_assets');
             $table->timestamps();
 
         });

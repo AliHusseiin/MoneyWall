@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('floor_No');
             $table->integer('bedrooms');
             $table->unsignedBigInteger('assetID');
-            $table->foreign('assetID')->references('assetID')->on('user_Assets');
+            $table->foreign('assetID')->references('id')->on('user_assets');
             $table->timestamps();
 
         });
