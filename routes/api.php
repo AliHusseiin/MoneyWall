@@ -34,5 +34,9 @@ Route::middleware(['auth:sanctum', 'can:isAdmin'])->prefix('/admin')->group(func
 Route::get('/{id}/profile',[ProfileController::class,'show']);
 // Route::get('/bill',[BillController::class,'index']);
 // Route::post('admin/bill',[BillController::class,'create']);
+
+// ADD Bills
 Route::post('/bill',[BillController::class,'store'])->name("bill");;
 });
+
+
