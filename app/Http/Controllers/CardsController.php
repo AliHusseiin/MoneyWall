@@ -23,7 +23,7 @@ class CardsController extends Controller
         $card = new Card();
         $card->fill($request->post());
         $card->CVV = Crypt::encrypt($card['CVV']);
-        $card->card_Number = Crypt::encrypt($card['card_Number']);
+        $card->card_Number = Crypt::encrypt($card['card_Number']) . substr($card['card_Number'], -4);
         $card->exp_date = Crypt::encrypt($card['exp_date']);
         $card->save();
         $cards = Card::all();
