@@ -17,18 +17,23 @@ class AssetsController extends Controller
     function getUserAssets(Request $request)
     {
         $id = $request['id'];
-        $userAssets = UserAsset::where('userID', $id)->get(); //1, 11
-        $userAsset = $userAssets['id'];
         
-        
+        $userID = $id; 
+        $userAssets = UserAsset::where('userID', $userID)->with(['other', 'house', 'transportation'])->get();
+    
 
-      
-        $userAssetsOthers = AssetsOther::where('assetID', $userAsset)->get();
-        // $userAssetsRealEstate = AssetsHouse::where('assetID', $userAssets)->get();
-        // $userAssetsVechils = AssetsTransportation::where('assetID', $userAssets)->get();
+    foreach ($userAssets as $asset) {
+        if ($asset->other) {
 
-       // return response()->json(["userAssetsOthers" => $userAssetsOthers,"userAssetsRealEstate" => $userAssetsRealEstate,"userAssetsVechils" => $userAssetsVechils]);
-        return response()->json(["userAssetsOthers" => $userAssetsOthers]);
+            $name = $asset->other->name;
+            $description = $asset->other->description;
+        } elseif ($asset->house) {
+
+            $location = $asset->house->location;
+            $area = $asset->house->area;
+        }
+    }
+      return response()->json(['Other' => ['name' => $name , 'description' => $description], 'House' => ['Location' => $location, 'area' => $area]]);
     }
 
     function createNewAssets(Request $request)

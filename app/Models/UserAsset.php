@@ -12,17 +12,18 @@ class UserAsset extends Model
 
     protected $guarded = [];
 
-     public function user(){
-        return $this->belongsTo(User::class);
-    }
-      public function assets_house(){
-        return $this->hasMany(AssetsHouse::class);
-    }
-     public function assets_transportation(){
-        return $this->hasMany(AssetsTransportation::class);
-    }
-     public function assets_other(){
-        return $this->hasMany(AssetsOther::class);
+    public function other()
+    {
+        return $this->hasOne('App\Models\AssetsOther', 'assetID');
     }
 
+    public function house()
+    {
+        return $this->hasOne('App\Models\AssetsHouse', 'assetID');
+    }
+
+    public function transportation()
+    {
+        return $this->hasOne('App\Models\AssetsTransportation', 'assetID');
+    }
 }
