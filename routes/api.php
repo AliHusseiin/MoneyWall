@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AssetsController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -28,4 +29,9 @@ Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
 });
 Route::middleware(['auth:sanctum', 'can:isAdmin'])->prefix('/admin')->group(function () {
 
+});
+
+Route::group(['prefix'=>'user'], function() {
+    Route::get('/assets', [AssetsController::class, 'getUserAssets']);
+    Route::post('/createasset', [AssetsController::class, 'createNewAssets']);
 });
