@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
+
 
 class Card extends Model
 {
@@ -14,8 +16,9 @@ class Card extends Model
         'bank_name' => 'required',
         'balance' => 'required',
         'card_Number' => 'required|digits:16',
-        'exp_date' => 'required|date_format:m/y',
-        'CVV' => 'required|digits:3'
+        'exp_date' => 'required',
+        'CVV' => 'required|digits:3',
+
     ];
 
 }
