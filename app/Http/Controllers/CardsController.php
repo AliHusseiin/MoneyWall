@@ -15,14 +15,14 @@ class CardsController extends Controller
 {
 
     //
-    function getCards()
-    {
-        $cards = Card::all();
-        // $card = new Card();
-        // $card->CVV = Crypt::encrypt($card['CVV']);
+    // function getCards()
+    // {
+    //     $cards = Card::all();
+    //     // $card = new Card();
+    //     // $card->CVV = Crypt::encrypt($card['CVV']);
 
-        return response()->json(["status" => 200, "cards" => $cards]);
-    }
+    //     return response()->json(["status" => 200, "cards" => $cards]);
+    // }
     function add(Request $request)
     {
 
@@ -51,10 +51,10 @@ class CardsController extends Controller
         $card->card_Number = Crypt::encrypt($card->card_Number);
         $card->exp_date = Crypt::encrypt($card->exp_date);
 
-        //decrypt
-        $cvv = Crypt::decrypt($card->CVV);
-        $number = Crypt::decrypt($card->card_Number);
-        $exp = Crypt::decrypt($card->exp_date);
+        // //decrypt
+        // $cvv = Crypt::decrypt($card->CVV);
+        // $number = Crypt::decrypt($card->card_Number);
+        // $exp = Crypt::decrypt($card->exp_date);
 
 
 
@@ -62,9 +62,9 @@ class CardsController extends Controller
         return response()->json([
             "status" => true,
             'message' => 'Card added successfully',
-            "cvv" => $cvv,
-            'number' => $number,
-            'exp' => $exp,
+            // "cvv" => $cvv,
+            // 'number' => $number,
+            // 'exp' => $exp,
             'data' => $card,
         ], 200);
 
@@ -73,11 +73,19 @@ class CardsController extends Controller
 
 
 
-    public function show($id)
+    public function showCardById(Request $request)
     {
-        $card = Card::findOrFail($id);
-        $card->CVV = Crypt::encrypt($card['CVV']);
-        return response()->json(["status" => 200, "message" => "Cards added!", "card" => $card]);
+
+        $userId = $request->id;
+        $cards = Card::all()->where("userID", $userId);
+        // $card = Crypt::decrypt($card->card_Number,);
+        // $card->CVV = Crypt::encrypt($card['CVV']);
+        //decrypt
+        // $cvv = Crypt::decrypt($card->CVV);
+        // $number = Crypt::decrypt($card->card_Number);
+        // $exp = Crypt::decrypt($card->exp_date);
+        //return response()->json(["status" => 200, "data" => ['number' => $number, 'cvv' => $cvv, 'expire' => $exp, 'bank' => $card->bank_name]]);
+        return response()->json(['cards' => $cards]);
     }
 
     public function destroy($id)
