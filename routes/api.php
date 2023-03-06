@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
+//Route::get('users', [UsersController::class, 'users']);
 
 
 Route::group(['prefix' => 'user'], function () {
@@ -36,7 +36,7 @@ Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
     Route::delete('delete/{id}', [CardsController::class, 'destroy']);
 });
 Route::middleware(['auth:sanctum', 'can:isAdmin'])->prefix('/admin')->group(function () {
-
+    Route::get('users', [UsersController::class, 'users']);
 });
 
 Route::group(['prefix' => 'user'], function () {

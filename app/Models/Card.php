@@ -14,11 +14,15 @@ class Card extends Model
 
     public static $rules = [
         'bank_name' => 'required',
-        'balance' => 'required',
         'card_Number' => 'required|digits:16',
         'exp_date' => 'required',
         'CVV' => 'required|digits:3',
 
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
 }
