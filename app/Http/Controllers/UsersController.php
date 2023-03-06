@@ -12,6 +12,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 class UsersController extends Controller
 {
@@ -42,10 +43,13 @@ class UsersController extends Controller
     function login(Request $request) {
         $email = $request->email;
         $password = $request->password;
+
+     
         $user = User::where('email', $email)->first();
         if($user){
-            if(Auth::attempt(['email'=>$email,'password'=>$password])){
-                if($user->email_verified_at){
+                if(Auth::attempt(['email'=>$email,'password'=>$password])){
+
+                // if($user->email_verified_at){
                     // Generate an access token, By default, Sanctum sets the expiration time for an access token to one hour (3600 seconds)
                     $accessToken = $user->createToken("API Access Token")->plainTextToken;
             
@@ -58,16 +62,20 @@ class UsersController extends Controller
                     $user->refresh_token = $refreshToken;
                     $user->refresh_token_expiration = $refreshTokenExpiration;
                     $user->save();
-                    return response()->json([
+                        return response()->json([
                         'status' => true,
                         'message' => 'User Logged In Successfully',
                         'data' => $user,
                         'access_token' => $accessToken,
                         'refresh_token' => $refreshToken
                     ], 200);  
-                } else {
-                    return Response::json("Please Verify your account, Check junk/spam folder.", 404);
-                }
+                
+                  
+              //  } 
+                
+                // else {
+                //     return Response::json("Please Verify your account, Check junk/spam folder.", 404);
+                // }
             }else{
                 return Response::json("password is incorrect!", 400);
             } 
@@ -75,6 +83,9 @@ class UsersController extends Controller
             return Response::json("email is not found!", 404);
         }
     }
+
+
+
     function verifyEmail(Request $request) {
         $user = User::where('verification_email_token', $request->verificationToken)->first();
         if (!$user) {
@@ -116,4 +127,75 @@ class UsersController extends Controller
             'refresh_token_expiration' => $refreshTokenExpiration
         ], 200);
     }
+
+
+
+
+    function updateProfile($id,Request $request)
+    {
+
+      
+        try{
+        $user = User::find($id);        
+        $user->mobile =$request->mobile;
+        $user->birthday =$request->birthday;
+        $user->zip =$request->zip;
+        $user->address =$request->address;
+        $user->city=$request->city;
+        $user->country =$request->country;        
+        $user->save();
+        return response()->json("You have successfully updated your profile",200);
+    }catch(QueryException $e){
+        return Response::json("Failed to update your profile", 404);
+
+    } 
+
+    }
+
+
+
+
+    function changePassword($id,Request $request)
+    {
+
+         try{ 
+          #Match The Old Password
+          if(!Hash::check($request->old_password, auth()->user()->password)){
+           return response()->json("Password is not correct",400);
+           }else{
+               #Update the new Password
+               if($request->new_password===$request->conf_password){
+         
+                   User::whereId(auth()->user()->id)->update([
+                       'password' => Hash::make($request->new_password)
+                   ]);   
+                return Response::json("Your password has been changed successfully", 200);
+         
+               }
+               else{
+                   return Response::json("Please, make sure your passwords match", 400);
+               }
+           }
+           }catch(QueryException $e){
+               return Response::json("Failed to change your password", 404);
+           } 
+         
+    }
+
+
+    function deleteAccount($id,Request $request)
+    { 
+        
+        $email = $request->email;
+        $password = $request->password;
+        if(Hash::check($request->password, auth()->user()->password )){
+              User::destroy($id);
+              // Logout 
+    }else{
+        return response()->json("Password is not correct",400);
+
+    }
+}
+
+
 }

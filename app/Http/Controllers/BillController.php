@@ -30,24 +30,19 @@ class BillController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function addBill(Request $request)
     {
         
         $bill = new Bill;
-        
-     
-        // $bill['company_name'] =$request['description'];
-
-        $bill->fill($request->post());
-        $bill['company_name'] ="Electricity Bill";
-        $bill['amount'] =  200;
-        $bill['description'] = "We send text messages to customers to remind them to pay overdue bills. Those text messages will have a reference number. We will also send outage notification texts, but only if you’ve opted in to notifications using your online account.";
-        $bill['status'] =  "Required";
-        $bill['due_time'] ="2/5/2023";
-        $bill['userID '] = 5;
-
+        $bill->company_name =$request->company_name;
+        $bill->type=$request->type;
+        $bill->amount = $request->amount;
+        $bill->description = $request->description;
+        $bill->status = $request->status;
+        $bill->due_time =$request->due_time;
+        $bill->userID =$request->userID;
         $bill->save();
-        return response()->json(['message' => 'success']);
+        return response()->json(['message' => 'success'],200);
     }
 
     /**

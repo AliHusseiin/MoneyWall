@@ -9,8 +9,7 @@ class Bill extends Model
 {
     use HasFactory;
     protected $table = 'bills';
-    protected $guarded = [];
-    // protected $fillable =[];
-//    protected $fillable = ['company_name','amount','description','status','due_time','userID'];
+    protected $fillable =[];
+
 
 }

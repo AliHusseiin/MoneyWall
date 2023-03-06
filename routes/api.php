@@ -24,19 +24,19 @@ Route::group(['prefix'=>'user'], function() {
     Route::post('/register', [UsersController::class, 'register']);
     Route::post('/login', [UsersController::class, 'login']);
     Route::get('verify/{verificationToken}', [UsersController::class, 'verifyEmail']);
+
+
+
 });
 Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
     Route::post('/refresh', [UsersController::class, 'refresh']);
+    Route::patch('/profile/update/{id}', [UsersController::class, 'updateProfile']);
+    Route::patch('/profile/changePassword/{id}', [UsersController::class, 'changePassword']);
+    Route::delete('/profile/deleteAccount/{id}', [UsersController::class, 'deleteAccount']);
 });
-Route::middleware(['auth:sanctum', 'can:isAdmin'])->prefix('/admin')->group(function () {
 
-
-Route::get('/{id}/profile',[ProfileController::class,'show']);
-// Route::get('/bill',[BillController::class,'index']);
-// Route::post('admin/bill',[BillController::class,'create']);
-
-// ADD Bills
-Route::post('/bill',[BillController::class,'store'])->name("bill");;
-});
+ Route::middleware(['auth:sanctum'])->prefix('/admin')->group(function () {
+    Route::post('/bill/add',[BillController::class,'addBill']);
+ });
 
 
