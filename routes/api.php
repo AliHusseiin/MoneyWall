@@ -6,6 +6,8 @@ use App\Http\Controllers\CardsController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\BillController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +29,11 @@ Route::group(['prefix' => 'user'], function () {
     Route::get('verify/{verificationToken}', [UsersController::class, 'verifyEmail']);
 });
 
+ Route::middleware(['auth:sanctum'])->prefix('/admin')->group(function () {
+    Route::post('/bill/add',[BillController::class,'addBill']);
+    Route::get('users', [UsersController::class, 'users']);
+ });
+
 
 Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
     Route::post('/refresh', [UsersController::class, 'refresh']);
@@ -34,12 +41,7 @@ Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
     Route::get('/cards', [CardsController::class, 'getCards']);
     Route::post('/cards/{id}', [CardsController::class, 'show']);
     Route::delete('delete/{id}', [CardsController::class, 'destroy']);
-});
-Route::middleware(['auth:sanctum', 'can:isAdmin'])->prefix('/admin')->group(function () {
-    Route::get('users', [UsersController::class, 'users']);
-});
-
-Route::group(['prefix' => 'user'], function () {
     Route::get('/assets', [AssetsController::class, 'getUserAssets']);
     Route::post('/createasset', [AssetsController::class, 'createNewAssets']);
 });
+
