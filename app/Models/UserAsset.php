@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class UserAsset extends Model
 {
     use HasFactory;
+
+    public static $rules = [
+        
+        'document'  => 'required|mimes:doc,docx,pdf,txt,csv|max:2048'
+    ];
     protected $table = 'user_assets';
 
     protected $guarded = [];
