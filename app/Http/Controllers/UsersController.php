@@ -134,7 +134,6 @@ class UsersController extends Controller
     function updateProfile($id,Request $request)
     {
 
-      
         try{
         $user = User::find($id);        
         $user->mobile =$request->mobile;
@@ -185,9 +184,8 @@ class UsersController extends Controller
 
     function deleteAccount($id,Request $request)
     { 
+
         
-        $email = $request->email;
-        $password = $request->password;
         if(Hash::check($request->password, auth()->user()->password )){
               User::destroy($id);
               // Logout 
