@@ -18,24 +18,28 @@ class AssetsController extends Controller
     {
         $id = $request['id'];
         $userID = $id; 
-        $userAssets = UserAsset::where('userID', $userID)->with(['other', 'house', 'transportation'])->get();
+        $userAllAssets = UserAsset::where('userID', $userID)->with(['other', 'house', 'transportation'])->get();
         $assetOther = [];
         $assetHouse = [];
         $assetTransportation = [];
+        
     
 
-    foreach ($userAssets as $asset)
+    foreach ($userAllAssets as $asset)
      {
         if ($asset->other)
          {
-           array_push($assetOther,$asset->other); 
+            $asset->other->status = $asset->status;
+            array_push($assetOther,$asset->other); 
         }
          if ($asset->house)
          {
+            $asset->house->status = $asset->status;
             array_push($assetHouse,$asset->house); 
         }
         if($asset->transportation)
         {
+            $asset->transportation->status = $asset->status;
             array_push($assetTransportation,$asset->transportation); 
         }
     }
@@ -46,10 +50,13 @@ class AssetsController extends Controller
     function createNewAssets(Request $request)
     {
         if ($request['other']) {
-            $assetOther = new AssetsOther;
+            $request->validate(UserAsset::$rules);
+            $documentUrl = $request->file('document')->store('user_assets', ['disk' => 'public']);
             $userAsset = new UserAsset;
             $userAsset['userID'] = $request['id'];
+            $userAsset['document'] = $documentUrl;
             $userAsset->save();
+            $assetOther = new AssetsOther;
             $assetOther->fill($request->post());
             $assetOther['assetID'] = $userAsset['id'];
             $assetOther->save();
@@ -58,10 +65,13 @@ class AssetsController extends Controller
         }
         if($request['realestate'])
         {
-            $assetRealEstate = new AssetsHouse;
+            $request->validate(UserAsset::$rules);
+            $documentUrl = $request->file('document')->store('user_assets', ['disk' => 'public']);
             $userAsset = new UserAsset;
             $userAsset['userID'] = $request['id'];
+            $userAsset['document'] = $documentUrl;
             $userAsset->save();
+            $assetRealEstate = new AssetsHouse;
             $assetRealEstate->fill($request->post());
             $assetRealEstate['assetID'] = $userAsset['id'];
             $assetRealEstate->save();
@@ -70,10 +80,13 @@ class AssetsController extends Controller
         }
          if($request['vehicle'])
         {
-            $assetvehicle = new AssetsTransportation;
+            $request->validate(UserAsset::$rules);
+            $documentUrl = $request->file('document')->store('user_assets', ['disk' => 'public']);
             $userAsset = new UserAsset;
             $userAsset['userID'] = $request['id'];
+            $userAsset['document'] = $documentUrl;
             $userAsset->save();
+            $assetvehicle = new AssetsTransportation;
             $assetvehicle->fill($request->post());
             $assetvehicle['assetID'] = $userAsset['id'];
             $assetvehicle->save();
