@@ -134,6 +134,7 @@ class UsersController extends Controller
     function updateProfile($id,Request $request)
     {
 
+
         try{
         $user = User::find($id);        
         $user->mobile =$request->mobile;
