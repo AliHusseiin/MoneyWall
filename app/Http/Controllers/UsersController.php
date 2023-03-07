@@ -47,9 +47,9 @@ class UsersController extends Controller
      
         $user = User::where('email', $email)->first();
         if($user){
-                if(Auth::attempt(['email'=>$email,'password'=>$password])){
+                // if(Auth::attempt(['email'=>$email,'password'=>$password])){
 
-                if($user->email_verified_at){
+                // if($user->email_verified_at){
                     // Generate an access token, By default, Sanctum sets the expiration time for an access token to one hour (3600 seconds)
                     $accessToken = $user->createToken("API Access Token")->plainTextToken;
             
@@ -73,13 +73,15 @@ class UsersController extends Controller
                   
                } 
                 
-                else {
-                    return Response::json("Please Verify your account, Check junk/spam folder.", 404);
-                }
-            }else{
-                return Response::json("password is incorrect!", 400);
-            } 
-        }else {
+            //     else {
+            //         return Response::json("Please Verify your account, Check junk/spam folder.", 404);
+            //     }
+            // }else{
+            //     return Response::json("password is incorrect!", 400);
+            // } 
+        // }
+        
+        else {
             return Response::json("email is not found!", 404);
         }
     }
@@ -146,7 +148,7 @@ class UsersController extends Controller
         $user->save();
         return response()->json("You have successfully updated your profile",200);
     }catch(QueryException $e){
-        return Response::json("Failed to update your profile", 404);
+        return Response::json("Failed to update your profile", 400);
 
     } 
 
@@ -177,7 +179,7 @@ class UsersController extends Controller
                }
            }
            }catch(QueryException $e){
-               return Response::json("Failed to change your password", 404);
+               return Response::json("Failed to change your password", 400);
            } 
          
     }
