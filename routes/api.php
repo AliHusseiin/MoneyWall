@@ -6,7 +6,6 @@ use App\Http\Controllers\CardsController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BillController;
 
 /*
@@ -30,8 +29,11 @@ Route::group(['prefix' => 'user'], function () {
 });
 
  Route::middleware(['auth:sanctum'])->prefix('/admin')->group(function () {
+    Route::get('/bill', [BillController::class, 'index']);
     Route::post('/bill/add',[BillController::class,'addBill']);
+    Route::get('/bill/show/{id}', [BillController::class, 'show']);
     Route::get('users', [UsersController::class, 'users']);
+
     
  });
 
