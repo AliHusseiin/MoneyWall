@@ -28,14 +28,14 @@ Route::group(['prefix' => 'user'], function () {
     Route::get('verify/{verificationToken}', [UsersController::class, 'verifyEmail']);
 });
 
- Route::middleware(['auth:sanctum'])->prefix('/admin')->group(function () {
+Route::middleware(['auth:sanctum'])->prefix('/admin')->group(function () {
     Route::get('/bill', [BillController::class, 'index']);
-    Route::post('/bill/add',[BillController::class,'addBill']);
+    Route::post('/bill/add', [BillController::class, 'addBill']);
     Route::get('/bill/show/{id}', [BillController::class, 'show']);
     Route::get('users', [UsersController::class, 'users']);
 
-    
- });
+
+});
 
 
 Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
@@ -43,11 +43,10 @@ Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
     Route::patch('/profile/update/{id}', [UsersController::class, 'updateProfile']);
     Route::patch('/profile/changePassword/{id}', [UsersController::class, 'changePassword']);
     Route::delete('/profile/deleteAccount/{id}', [UsersController::class, 'deleteAccount']);
-    Route::post('/add', [CardsController::class, 'add']);
-    Route::get('/cards', [CardsController::class, 'getCards']);
-    Route::post('/cards/{id}', [CardsController::class, 'show']);
+
+    Route::post('/addcard', [CardsController::class, 'addCard']);
+    Route::get('/cards/{id}', [CardsController::class, 'showCardById']);
     Route::delete('delete/{id}', [CardsController::class, 'destroy']);
     Route::get('/assets', [AssetsController::class, 'getUserAssets']);
     Route::post('/createasset', [AssetsController::class, 'createNewAssets']);
 });
-
