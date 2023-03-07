@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Card;
 use Carbon\Carbon;
-use Date;
 use Illuminate\Contracts\Encryption\DecryptException;
+//use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
@@ -14,30 +14,17 @@ use Illuminate\Support\Facades\Response;
 class CardsController extends Controller
 {
 
-    //
-    // function getCards()
-    // {
-    //     $cards = Card::all();
-    //     // $card = new Card();
-    //     // $card->CVV = Crypt::encrypt($card['CVV']);
-
-    //     return response()->json(["status" => 200, "cards" => $cards]);
-    // }
-    function add(Request $request)
+    function addCard(Request $request)
     {
 
-
         $request->validate(Card::$rules);
-        //$message = Card::messages();
-
         $card = new Card();
 
         $card->fill($request->post());
         $card->balance = rand(500, 50000);
 
-
-        $exp_date = $card->exp_date;
         //check exp date
+        $exp_date = $card->exp_date;
         $date1 = Carbon::createFromFormat('m/y', $exp_date);
         $date2 = Carbon::now()->format('m/y');
 
@@ -51,41 +38,30 @@ class CardsController extends Controller
         $card->card_Number = Crypt::encrypt($card->card_Number);
         $card->exp_date = Crypt::encrypt($card->exp_date);
 
-        // //decrypt
-        // $cvv = Crypt::decrypt($card->CVV);
-        // $number = Crypt::decrypt($card->card_Number);
-        // $exp = Crypt::decrypt($card->exp_date);
-
-
-
         $card->save();
         return response()->json([
             "status" => true,
             'message' => 'Card added successfully',
-            // "cvv" => $cvv,
-            // 'number' => $number,
-            // 'exp' => $exp,
             'data' => $card,
         ], 200);
 
     }
-
-
-
 
     public function showCardById(Request $request)
     {
 
         $userId = $request->id;
         $cards = Card::all()->where("userID", $userId);
-        // $card = Crypt::decrypt($card->card_Number,);
-        // $card->CVV = Crypt::encrypt($card['CVV']);
-        //decrypt
-        // $cvv = Crypt::decrypt($card->CVV);
-        // $number = Crypt::decrypt($card->card_Number);
-        // $exp = Crypt::decrypt($card->exp_date);
-        //return response()->json(["status" => 200, "data" => ['number' => $number, 'cvv' => $cvv, 'expire' => $exp, 'bank' => $card->bank_name]]);
-        return response()->json(['cards' => $cards]);
+        $allCards = [];
+
+        foreach ($cards as $card) {
+
+            $card['CVV'] = Crypt::decrypt($card->CVV);
+            $card['card_Number'] = Crypt::decrypt($card->card_Number);
+            $card['exp_date'] = Crypt::decrypt($card->exp_date);
+            array_push($allCards, $card);
+        }
+        return response()->json(["User's Cards" => $allCards]);
     }
 
     public function destroy($id)
