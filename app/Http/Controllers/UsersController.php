@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Mail\EmailVerification;
+use App\Mail\PasswordReset;
+use App\Models\PasswordReset as ModelsPasswordReset;
+use App\Models\PasswordResetModel;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
@@ -37,18 +41,20 @@ class UsersController extends Controller
         $verificationToken = Str::random(100);
         $user->verification_email_token = $verificationToken;
         try {
+            $existingUser = User::where('username', $user->username)->first();
+            if ($existingUser) {
+                return Response::json("Username already exists", 409);
+            }
             $user->save();
-
             //Send verification email
             $URL = url('http://127.0.0.1:8000/api/user/verify/' . $verificationToken);
             Mail::to($user->email)->send(new EmailVerification($URL));
-
-            return Response::json("User added to DB ", 201);
+            return Response::json("Activation Email has been sent to you.", 201);
         } catch (QueryException $e) {
             // Checking if user already registered
             $errorCode = $e->errorInfo[1];
             if ($errorCode == 1062) {
-                return 'Email already signed';
+                return Response::json("Email already registered", 409);
             }
         }
     }
@@ -56,56 +62,45 @@ class UsersController extends Controller
     {
         $email = $request->email;
         $password = $request->password;
-
-
         $user = User::where('email', $email)->first();
         if ($user) {
             if (Auth::attempt(['email' => $email, 'password' => $password])) {
+                if ($user->email_verified_at) {
+                    // Generate an access token, By default, Sanctum sets the expiration time for an access token to one hour (3600 seconds)
+                    $accessToken = $user->createToken("API Access Token")->plainTextToken;
 
-                // if($user->email_verified_at){
-                // Generate an access token, By default, Sanctum sets the expiration time for an access token to one hour (3600 seconds)
-                $accessToken = $user->createToken("API Access Token")->plainTextToken;
+                    // Generate a refresh token
+                    $refreshToken = Str::random(60);
 
-                // Generate a refresh token
-                $refreshToken = Str::random(60);
-
-                // Set the refresh token expiration time
-                $refreshTokenExpiration = Carbon::now()->addDays(7);
-                // Save the refresh token and its expiration time to the database
-                $user->refresh_token = $refreshToken;
-                $user->refresh_token_expiration = $refreshTokenExpiration;
-                $user->save();
-                return response()->json([
-                    'status' => true,
-                    'message' => 'User Logged In Successfully',
-                    'data' => $user,
-                    'access_token' => $accessToken,
-                    'refresh_token' => $refreshToken
-                ], 200);
-
-
+                    // Set the refresh token expiration time
+                    $refreshTokenExpiration = Carbon::now()->addDays(7);
+                    // Save the refresh token and its expiration time to the database
+                    $user->refresh_token = $refreshToken;
+                    $user->refresh_token_expiration = $refreshTokenExpiration;
+                    $user->save();
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'User Logged In Successfully',
+                        'data' => $user,
+                        'access_token' => $accessToken,
+                        'refresh_token' => $refreshToken
+                    ], 200);
+                } else {
+                    return Response::json("Please Verify your account, Check junk/spam folder.", 404);
+                }
+            } else {
+                return Response::json("Password is incorrect!", 400);
             }
-
-            //     else {
-            //         return Response::json("Please Verify your account, Check junk/spam folder.", 404);
-            //     }
-            // }else{
-            //     return Response::json("password is incorrect!", 400);
-            // } 
         } else {
             return Response::json("email is not found!", 404);
         }
     }
-
-
-
     function verifyEmail(Request $request)
     {
         $user = User::where('verification_email_token', $request->verificationToken)->first();
         if (!$user) {
             return response()->json(['error' => 'Token not found'], 404);
         }
-
         $user->email_verified_at = Carbon::now();
         $user->verification_email_token = null;
         $user->save();
@@ -143,9 +138,55 @@ class UsersController extends Controller
         ], 200);
     }
 
-
-
-
+    function resetPasswordRequest(Request $request)
+    {
+        $email = $request->email;
+        try {
+            $user = User::where('email', $email)->first();
+            if ($user) {
+                $resetToken = Str::random(60);
+                $passwordReset = new PasswordResetModel;
+                $passwordReset->email = $request->email;
+                $passwordReset->token = $resetToken;
+                $passwordReset->expires_at = Carbon::now()->addMinutes(60);
+                $passwordReset->save();
+                $userFirstName = $user->fname;
+                $userLastName = $user->lname;
+                $URL = url('http://localhost:4200/reset-password/confirm') . '?token=' . urlencode($resetToken);
+                Mail::to($user->email)->send(new PasswordReset($URL, $userFirstName, $userLastName));
+                return Response::json("Password reset mail sent successfully.", 201);
+            } else {
+                return Response::json("Email was not found", 400);
+            }
+        } catch (QueryException $e) {
+            return Response::json("An error occurred while processing your request.", 500);
+        }
+    }
+    function resetPassword(Request $request)
+    {
+        $resetToken = $request->token;
+        $password = $request->password;
+        $tokenRecord = PasswordResetModel::where('token', '=', $resetToken)->first();
+        $email = $tokenRecord->email;
+        if (!$tokenRecord || Carbon::parse($tokenRecord->expires_at)->isPast()) {
+            return Response::json("token is expired or have been used!", 400);
+        }
+        try {
+            $user = User::where('email', $email)->first();
+            if (Hash::check($password, $user->password)) {
+                return Response::json("New password can not be the same as your old password", 409);
+            } else {
+                $user->password = $password;
+                $user['password'] = Hash::make($user['password']);
+                $user->save();
+                $tokenRecord->expires_at = Carbon::now();
+                $tokenRecord->save();
+                return response()->json("Password Updated Successfully", 201);
+            }
+        } catch (QueryException $e) {
+            return Response::json("$e", 500);
+        }
+    }
     function updateProfile($id, Request $request)
     {
 
