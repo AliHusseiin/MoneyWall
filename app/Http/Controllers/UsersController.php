@@ -47,7 +47,7 @@ class UsersController extends Controller
      
         $user = User::where('email', $email)->first();
         if($user){
-                // if(Auth::attempt(['email'=>$email,'password'=>$password])){
+                if(Auth::attempt(['email'=>$email,'password'=>$password])){
 
                 // if($user->email_verified_at){
                     // Generate an access token, By default, Sanctum sets the expiration time for an access token to one hour (3600 seconds)
@@ -79,7 +79,7 @@ class UsersController extends Controller
             // }else{
             //     return Response::json("password is incorrect!", 400);
             // } 
-        // }
+        }
         
         else {
             return Response::json("email is not found!", 404);
@@ -138,13 +138,16 @@ class UsersController extends Controller
 
 
         try{
-        $user = User::find($id);        
-        $user->mobile =$request->mobile;
+        $user = User::find($id); 
+        $user->fname =$request->firstName;
+        $user->lname =$request->lastName;
+        $user->username =$request->userName;
+        $user->mobile =$request->mobileNum;
         $user->birthday =$request->birthday;
         $user->zip =$request->zip;
         $user->address =$request->address;
         $user->city=$request->city;
-        $user->country =$request->country;        
+        $user->country =$request->state;        
         $user->save();
         return response()->json("You have successfully updated your profile",200);
     }catch(QueryException $e){
@@ -162,14 +165,14 @@ class UsersController extends Controller
 
          try{ 
           #Match The Old Password
-          if(!Hash::check($request->old_password, auth()->user()->password)){
+          if(!Hash::check($request->oldPassword, auth()->user()->password)){
            return response()->json("Password is not correct",400);
            }else{
                #Update the new Password
-               if($request->new_password===$request->conf_password){
+               if($request->newPassword===$request->confirmPassword){
          
-                   User::whereId(auth()->user()->id)->update([
-                       'password' => Hash::make($request->new_password)
+                   User::whereId($id)->update([
+                       'password' => Hash::make($request->newPassword)
                    ]);   
                 return Response::json("Your password has been changed successfully", 200);
          
@@ -189,14 +192,16 @@ class UsersController extends Controller
     { 
 
         
-        if(Hash::check($request->password, auth()->user()->password )){
-              User::destroy($id);
-              // Logout 
-    }else{
-        return response()->json("Password is not correct",400);
+        if  ( Hash::check($request->password, auth()->user()->password )
+             && ($request->email== auth()->user()->email ) ){
+                  User::destroy($id);
+                  return response()->json("Your account deleted successfully",200);
 
-    }
-}
+            }else{
+                return response()->json("Password is not correct",400);
+        
+            }
+        }
 
 
 }
