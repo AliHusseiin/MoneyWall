@@ -16,62 +16,72 @@ class CardsController extends Controller
 
     function addCard(Request $request)
     {
+        if ($request->id == Auth::user()->id) {
+            $request->validate(Card::$rules);
+            $card = new Card();
 
-        $request->validate(Card::$rules);
-        $card = new Card();
+            $card->fill($request->post());
+            $card->balance = rand(500, 50000);
 
-        $card->fill($request->post());
-        $card->balance = rand(500, 50000);
+            //check exp date
+            $exp_date = $card->exp_date;
+            $date1 = Carbon::createFromFormat('m/y', $exp_date);
+            $date2 = Carbon::now()->format('m/y');
 
-        //check exp date
-        $exp_date = $card->exp_date;
-        $date1 = Carbon::createFromFormat('m/y', $exp_date);
-        $date2 = Carbon::now()->format('m/y');
+            if ($date1->lte($date2)) {
+                return Response::json("Expired card", 422);
+            }
 
-        if ($date1->lte($date2)) {
-            return Response::json("Expired card", 403);
+            //encrypt
+            $card->CVV = Crypt::encrypt($card->CVV);
+            $card->card_Number = Crypt::encrypt($card->card_Number);
+            $card->exp_date = Crypt::encrypt($card->exp_date);
+
+            $card->save();
+            return response()->json([
+                "status" => true,
+                'message' => 'Card added successfully',
+                'data' => $card,
+            ], 200);
+        } else {
+            return response()->json([
+                "unAuthorizes"
+            ], 401);
         }
-
-
-        //encrypt
-        $card->CVV = Crypt::encrypt($card->CVV);
-        $card->card_Number = Crypt::encrypt($card->card_Number);
-        $card->exp_date = Crypt::encrypt($card->exp_date);
-
-        $card->save();
-        return response()->json([
-            "status" => true,
-            'message' => 'Card added successfully',
-            'data' => $card,
-        ], 200);
-
     }
 
     public function showCardById(Request $request)
     {
 
         $userId = $request->id;
-        $cards = Card::all()->where("userID", $userId);
-        $allCards = [];
+        if ($userId == Auth::user()->id) {
+            $cards = Card::all()->where("userID", $userId);
+            $allCards = [];
 
-        foreach ($cards as $card) {
+            foreach ($cards as $card) {
 
-            $card['CVV'] = Crypt::decrypt($card->CVV);
-            $card['card_Number'] = Crypt::decrypt($card->card_Number);
-            $card['exp_date'] = Crypt::decrypt($card->exp_date);
-            array_push($allCards, $card);
+                $card['CVV'] = Crypt::decrypt($card->CVV);
+                $card['card_Number'] = Crypt::decrypt($card->card_Number);
+                $card['exp_date'] = Crypt::decrypt($card->exp_date);
+                array_push($allCards, $card);
+            }
+
+            return response()->json(["User's Cards" => $allCards]);
+        } else {
+            return response()->json(["Unauthorized"], 401);
         }
-        return response()->json(["User's Cards" => $allCards]);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        $card = Card::find($id);
-        $result = $card->delete();
-        if ($result) {
-            return (["result" => "deleted!"]);
+        if ($request->id == Auth::user()->id) {
+            $card = Card::find($id);
+            $result = $card->delete();
+            if ($result)
+                return (["result" => "deleted!"]);
+
         } else {
-            return (["result" => "faild"]);
+            return response()->json(["unothourized"], 401);
         }
     }
 }
