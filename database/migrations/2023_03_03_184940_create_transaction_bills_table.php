@@ -4,21 +4,21 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('cards', function (Blueprint $table) {
+        Schema::create('transaction_bills', function (Blueprint $table) {
             $table->id();
-            $table->string('bank_name');
-            $table->double('balance');
-            $table->string('card_Number');
-            $table->string('exp_date');
-            $table->string('CVV');
+            $table->double("balance");
+            $table->text('description')->nullable();
             $table->unsignedBigInteger('userID');
             $table->foreign('userID')->references('id')->on('users');
+            $table->unsignedBigInteger('billID');
+            $table->foreign('billID')->references('id')->on('bills');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('cards');
+        Schema::dropIfExists('transaction_bills');
     }
 };

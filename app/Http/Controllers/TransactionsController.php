@@ -6,7 +6,7 @@ use App\Models\Transaction;
 use Exception;
 use Illuminate\Http\Request;
 
-class TransactionController extends Controller
+class TransactionsController extends Controller
 {
     //
     
@@ -14,23 +14,27 @@ class TransactionController extends Controller
         try{
             $request->validate(Transaction::$rules);
         
-            $seller = Transaction::user($request->sellerID);
-            $buyer = Transaction::user($request->buyerID);
+            $receiver = Transaction::user($request->sellerID); //receiver => seller
+            $sender = Transaction::user($request->buyerID); // sender =>buyer
     
-            if($seller['balance']){
-                if($seller['balance'] >= $request->amount){
+            if($sender['balance']){
+                if($sender['balance'] >= $request['balance']){
     
-                    $seller['balance'] += $request->amount;
-                    $buyer['balance'] -= $request->amount;
+                    $receiver['balance'] += $request->balance;
+                    $sender['balance'] -= $request->balance;
+
+                    
+                    $transaction = new Transaction();
+                    $transaction->fill($request->post());
+                    $transaction->save();
+
+                    $receiver->save();
+                    $sender->save();
+
+                return response()->json(['status'=>200,'message'=>'success']);
+                    
                 }
             }
-    
-            $transaction = new Transaction();
-            $transaction->fill($request->post());
-            $transaction->save();
-            
-            return response()->json(['status'=>200,'message'=>'success']);
-    
         }
         catch(Exception $e){
             return response()->json(['status'=>400,'message'=>$e->getMessage()]);
@@ -46,16 +50,20 @@ class TransactionController extends Controller
             $bill = Transaction::getBill($request->billID);
     
             $user = Transaction::user($request->userID);
-            if($user['balance'] >= $bill['amount']){
-                $user['balance'] -= $bill['amount'];
+            if($user['balance'] >= $bill['balance']){
+                $user['balance'] -= $bill['balance'];
+
+                
+                $transaction = new Transaction();
+                $transaction->fill($request->post());
+                $transaction->save();
+
+                $user->save();
+
+                return response()->json(['status'=>200,'message'=>'success']);
+
             }
 
-
-            $transaction = new Transaction();
-            $transaction->fill($request->post());
-            $transaction->save();
-
-            return response()->json(['status'=>200,'message'=>'success']);
         }
         catch(Exception $e)
         {
@@ -77,6 +85,7 @@ class TransactionController extends Controller
             case 'house':
                 $house = Transaction::house($request->assetID);
                 //remove from seller - add to buyer
+                
                 break;
             case 'transportation':
                 $transportation = Transaction::transportation($request->assetID);

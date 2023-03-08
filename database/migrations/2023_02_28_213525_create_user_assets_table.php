@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('transaction_assets', function (Blueprint $table) {
-            //
-            $table->double('amount');
+        Schema::create('user_assets', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('userID');
+            $table->foreign('userID')->references('id')->on('users');
+            $table->timestamps();
         });
     }
 
@@ -22,9 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('transaction_assets', function (Blueprint $table) {
-            //
-            $table->dropIfExists('amount');
-        });
+        Schema::dropIfExists('user_assets');
     }
 };

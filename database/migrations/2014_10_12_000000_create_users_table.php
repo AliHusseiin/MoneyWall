@@ -13,13 +13,29 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('username');
+            $table->string('fname');
+            $table->string('lname');
+            $table->string('mobile')->nullable();  
+            $table->string('birthday')->nullable();  
+            $table->string('password');
+            $table->string('accountNo')->nullable();
+            $table->string('zip')->nullable();
+            $table->string('address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('country')->nullable();
+            $table->string('national_Id');
+            $table->double("balance")->nullable();      
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
+            $table->string('verification_email_token', 100)->nullable();
+            $table->string('refresh_token',255)->nullable();
+            $table->timestamp('refresh_token_expiration')->nullable();
             $table->timestamps();
-        });
+            $table->boolean('isAdmin')->default(0);
+
+       
+});
     }
 
     /**

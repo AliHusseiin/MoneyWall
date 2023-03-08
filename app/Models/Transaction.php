@@ -11,6 +11,10 @@ class Transaction extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
+    protected $table = 'transaction_money';
+
     public static $rules =[
         'sellerID'=>'required', 
         'buyerID'=>'required',
