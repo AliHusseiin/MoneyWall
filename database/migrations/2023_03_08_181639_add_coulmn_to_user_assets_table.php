@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email');
-            $table->string('token');
-            $table->timestamps();
-            $table->timestamp('expires_at')->nullable();
+        Schema::table('user_assets', function (Blueprint $table) {
+            //
+            $table->string('status')->default('pending');
         });
     }
 
@@ -24,6 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('password_reset_tokens');
+        Schema::table('user_assets', function (Blueprint $table) {
+            //
+            $table->dropColumn('status');
+        });
     }
 };

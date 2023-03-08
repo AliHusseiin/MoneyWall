@@ -13,26 +13,25 @@ class BillController extends Controller
      */
     public function index()
     {
-        $bills = Bill::all();
-        return compact("bills");
+        $userIds =User::all('id');
+        return response()->json( $userIds,200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create(Request $request)
+    public function show($id)
     {
-        $users = User::all();
-        return compact("users"); 
-    
+        // $bills =Bill::where('userID', '=',$id);
+        $bills =Bill::where('userID', $id)->get();
+
+        return response()->json( $bills,200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
+  
+
     public function addBill(Request $request)
     {
         
+
         $bill = new Bill;
         $bill->company_name =$request->company_name;
         $bill->type=$request->type;
@@ -45,17 +44,7 @@ class BillController extends Controller
         return response()->json(['message' => 'success'],200);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Bill $Bill)
-    {
-        //
-    }
 
    
-    public function destroy(Bill $Bill)
-    {
-        //
-    }
+
 }
