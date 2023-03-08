@@ -4,6 +4,7 @@ use App\Http\Controllers\AssetsController;
 
 use App\Http\Controllers\CardsController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\TransactionsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
@@ -45,3 +46,8 @@ Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
     Route::post('/createasset', [AssetsController::class, 'createNewAssets']);
 });
 
+Route::middleware(['auth:sanctum'])->prefix('/transaction')->group(function () {
+    Route::patch('/money',[TransactionsController::class, 'updateMoney']);
+    Route::patch('/paybill',[TransactionsController::class, 'payBill']);
+    Route::post('/asset',[TransactionsController::class, 'transferAssetbetweenUsers']);
+});
