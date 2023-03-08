@@ -52,12 +52,7 @@ class UsersController extends Controller
         $user = User::where('email', $email)->first();
         if($user){
                 if(Auth::attempt(['email'=>$email,'password'=>$password])){
-<<<<<<< HEAD
-                if($user->email_verified_at){
-=======
-
-                // if($user->email_verified_at){
->>>>>>> fc72e6c405612d6458b88b6fbb4d94cea168dcc8
+                    if($user->email_verified_at){
                     // Generate an access token, By default, Sanctum sets the expiration time for an access token to one hour (3600 seconds)
                     $accessToken = $user->createToken("API Access Token")->plainTextToken;
             
@@ -78,7 +73,6 @@ class UsersController extends Controller
                         'refresh_token' => $refreshToken
                     ], 200);  
                } 
-<<<<<<< HEAD
                 else {
                     return Response::json("Please Verify your account, Check junk/spam folder.", 404);
                 }
@@ -86,18 +80,6 @@ class UsersController extends Controller
                 return Response::json("Password is incorrect!", 400);
             } 
         }else {
-=======
-                
-            //     else {
-            //         return Response::json("Please Verify your account, Check junk/spam folder.", 404);
-            //     }
-            // }else{
-            //     return Response::json("password is incorrect!", 400);
-            // } 
-        }
-        
-        else {
->>>>>>> fc72e6c405612d6458b88b6fbb4d94cea168dcc8
             return Response::json("email is not found!", 404);
         }
     }
