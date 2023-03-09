@@ -9,13 +9,14 @@ use App\Models\User;
 use App\Models\UserAsset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Database\QueryException;
 class AssetsController extends Controller
 {
     //
 
     function getUserAssets(Request $request)
     {
+        $userID = $request->id;
         try{
             if (Auth::check() && Auth::user()->id == $userID) {
                 $id = $request['id'];
@@ -49,6 +50,7 @@ class AssetsController extends Controller
 
     function createNewAssets(Request $request)
     {
+        $userID = $request->id;
         if(Auth::check() && Auth::user()->id == $userID)
         {
             if ($request['other']) {
@@ -114,7 +116,7 @@ class AssetsController extends Controller
     {
         try {
             $id = $request->id;
-            $user = User::findOrFail($id);
+            $user = User::findOrFail($id); // check this Ali
             $userAsset = UserAsset::findOrFail($request->assetId);
             $userAsset->status = $request->status;
             $userAsset->save();

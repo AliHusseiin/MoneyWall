@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Card;
 use Carbon\Carbon;
 use Illuminate\Contracts\Encryption\DecryptException;
-//use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
@@ -16,6 +15,7 @@ class CardsController extends Controller
 
     function addCard(Request $request)
     {
+        $userID = $request->id;
         if (Auth::check() && Auth::user()->id == $userID) {
             $request->validate(Card::$rules);
             $card = new Card();
@@ -50,10 +50,9 @@ class CardsController extends Controller
 
     public function showCardById(Request $request)
     {
-
-        $userId = $request->id;
+        $userID = $request->id;
         if (Auth::check() && Auth::user()->id == $userID) {
-            $cards = Card::all()->where("userID", $userId);
+            $cards = Card::all()->where("userID", $userID);
             $allCards = [];
             foreach ($cards as $card) {
 
@@ -70,6 +69,7 @@ class CardsController extends Controller
 
     public function destroy(Request $request, $id)
     {
+        $userID = $request->id;
         if (Auth::check() && Auth::user()->id == $userID) {
             $card = Card::find($id);
             $result = $card->delete();

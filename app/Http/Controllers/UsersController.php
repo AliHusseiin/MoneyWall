@@ -197,6 +197,7 @@ class UsersController extends Controller
     }
     function updateProfile($id, Request $request)
     {
+        $userID = $request->id;
         if (Auth::check() && Auth::user()->id == $userID) {
             try {
                 $user = User::find($id);
@@ -220,6 +221,7 @@ class UsersController extends Controller
     }
     function changePassword($id, Request $request)
     {
+        $userID = $request->id;
         if (Auth::check() && Auth::user()->id == $userID) {
             try {
                 #Match The Old Password
@@ -247,6 +249,7 @@ class UsersController extends Controller
     }
     function deleteAccount($id, Request $request)
     {
+        $userID = $request->id;
         try {
             if(Auth::check() && Auth::user()->id == $userID){
                 if (

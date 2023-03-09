@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Bill;
 use App\Models\User;
 use Illuminate\Http\Request;
-
+use Illuminate\Database\QueryException;
 class BillController extends Controller
 {
     /**
