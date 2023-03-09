@@ -26,12 +26,12 @@ class User extends Authenticatable
         'username'
     ];
     public static $rules = [
-        'fname' => 'required',
-        'lname' => 'required',
-        'email' => 'required',
-        'password' => 'required',
-        'national_Id' => 'required',
-        'username' => 'required',
+        'fname' => 'required|regex:/^[A-Za-z]+$/',
+        'lname' => 'required|regex:/^[A-Za-z]+$/',
+        'email' => 'required|email',
+        'username' => 'required|min:8|regex:/^[a-zA-Z][a-zA-Z0-9]*$/',
+        'national_Id' => 'required|min:14|max:14|regex:/^[0-9]+$/',
+        'password' => 'required|min:8',
     ];
 
     /**

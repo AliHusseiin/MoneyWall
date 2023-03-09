@@ -18,29 +18,29 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Validation\ValidationException;
 class UsersController extends Controller
 {
     //
     function users(Request $request)
-    {
-        $user = User::find($request->id);
-        if ($user->isAdmin) {
+    {   
+        try {
             $users = User::all();
             return response()->json(["users" => $users], 200);
-        } else {
-            return response()->json(["unauthorizes"], 401);
+        } catch (QueryException $e) {
+            return response()->json(['message' => 'An error occurred while processing your request.'], 500);
         }
     }
     function register(Request $request)
     {
-        $request->validate(User::$rules);
-        $user = new User;
-        $user->fill($request->post());
-        $user['password'] = Hash::make($user['password']);
-        $verificationToken = Str::random(100);
-        $user->verification_email_token = $verificationToken;
         try {
+            $validated = $request->validate(User::$rules);
+            $user = new User;
+            $user->fill($validated);
+            $user['password'] = Hash::make($user['password']);
+            $verificationToken = Str::random(100);
+            $user->verification_email_token = $verificationToken;
             $existingUser = User::where('username', $user->username)->first();
             if ($existingUser) {
                 return Response::json("Username already exists", 409);
@@ -50,6 +50,15 @@ class UsersController extends Controller
             $URL = url('http://127.0.0.1:8000/api/user/verify/' . $verificationToken);
             Mail::to($user->email)->send(new EmailVerification($URL));
             return Response::json("Activation Email has been sent to you.", 201);
+        } catch (ValidationException $e) {
+            $errors = $e->validator->errors()->toArray();
+            $formattedErrors = [];
+            foreach ($errors as $field => $fieldErrors) {
+                $formattedErrors[$field] = $fieldErrors[0];
+            }
+            return response()->json([
+                'errors' => $formattedErrors
+            ], 422);
         } catch (QueryException $e) {
             // Checking if user already registered
             $errorCode = $e->errorInfo[1];
@@ -112,7 +121,6 @@ class UsersController extends Controller
     function refresh(Request $request)
     {
         $refreshToken = $request->refresh_token;
-
         $user = User::where('refresh_token', $refreshToken)
             ->where('refresh_token_expiration', '>', Carbon::now())
             ->first();
@@ -189,74 +197,72 @@ class UsersController extends Controller
     }
     function updateProfile($id, Request $request)
     {
-
-
-        try {
-            $user = User::find($id);
-            $user->fname = $request->firstName;
-            $user->lname = $request->lastName;
-            $user->username = $request->userName;
-            $user->mobile = $request->mobileNum;
-            $user->birthday = $request->birthday;
-            $user->zip = $request->zip;
-            $user->address = $request->address;
-            $user->city = $request->city;
-            $user->country = $request->state;
-            $user->save();
-            return response()->json("You have successfully updated your profile", 200);
-        } catch (QueryException $e) {
-            return Response::json("Failed to update your profile", 400);
-
+        if (Auth::check() && Auth::user()->id == $userID) {
+            try {
+                $user = User::find($id);
+                $user->fname = $request->firstName;
+                $user->lname = $request->lastName;
+                $user->username = $request->userName;
+                $user->mobile = $request->mobileNum;
+                $user->birthday = $request->birthday;
+                $user->zip = $request->zip;
+                $user->address = $request->address;
+                $user->city = $request->city;
+                $user->country = $request->state;
+                $user->save();
+                return response()->json("You have successfully updated your profile", 200);
+            } catch (QueryException $e) {
+                return Response::json("Failed to update your profile", 400);
+            }
+        } else {
+            return response()->json(['message' => 'Not Authorized!'], 401);
         }
-
     }
-
-
-
-
     function changePassword($id, Request $request)
     {
-
-        try {
-            #Match The Old Password
-            if (!Hash::check($request->oldPassword, auth()->user()->password)) {
-                return response()->json("Password is not correct", 400);
-            } else {
-                #Update the new Password
-                if ($request->newPassword === $request->confirmPassword) {
-
-                    User::whereId($id)->update([
-                        'password' => Hash::make($request->newPassword)
-                    ]);
-                    return Response::json("Your password has been changed successfully", 200);
-
+        if (Auth::check() && Auth::user()->id == $userID) {
+            try {
+                #Match The Old Password
+                if (!Hash::check($request->oldPassword, auth()->user()->password)) {
+                    return response()->json("Password is not correct", 400);
                 } else {
-                    return Response::json("Please, make sure your passwords match", 400);
+                    #Update the new Password
+                    if ($request->newPassword === $request->confirmPassword) {
+    
+                        User::whereId($id)->update([
+                            'password' => Hash::make($request->newPassword)
+                        ]);
+                        return Response::json("Your password has been changed successfully", 200);
+    
+                    } else {
+                        return Response::json("Please, make sure your passwords match", 400);
+                    }
                 }
+            } catch (QueryException $e) {
+                return Response::json("Failed to change your password", 400);
+            }
+        } else {
+            return response()->json(['message' => 'Not Authorized!'], 401);
+        }
+    }
+    function deleteAccount($id, Request $request)
+    {
+        try {
+            if(Auth::check() && Auth::user()->id == $userID){
+                if (
+                    Hash::check($request->password, auth()->user()->password)
+                    && ($request->email == auth()->user()->email)
+                ) {
+                    User::destroy($id);
+                    return response()->json("Your account deleted successfully", 200);
+                } else {
+                    return response()->json("Password is not correct", 400);
+                }
+            } else {
+                return response()->json(['message' => 'Not Authorized!'], 401);
             }
         } catch (QueryException $e) {
             return Response::json("Failed to change your password", 400);
         }
-
     }
-
-
-    function deleteAccount($id, Request $request)
-    {
-
-
-        if (
-            Hash::check($request->password, auth()->user()->password)
-            && ($request->email == auth()->user()->email)
-        ) {
-            User::destroy($id);
-            return response()->json("Your account deleted successfully", 200);
-
-        } else {
-            return response()->json("Password is not correct", 400);
-
-        }
-    }
-
-
 }
