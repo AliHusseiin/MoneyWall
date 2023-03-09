@@ -103,8 +103,6 @@ class AssetsController extends Controller
     function showAllUserAssetsToAdmin(Request $request)
     {
         try{
-            $id = $request->id;
-            $user = User::findOrFail($id);
             $allAssets = UserAsset::all();
             return response()->json(['userAssets' => $allAssets]);
         } catch(QueryException $e) {
