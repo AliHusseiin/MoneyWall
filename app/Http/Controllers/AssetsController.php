@@ -14,32 +14,30 @@ class AssetsController extends Controller
 {
     //
 
-    function getUserAssets(Request $request)
+    function getUserAssets()
     {
-        $userID = $request->id;
         try{
-            if (Auth::check() && Auth::user()->id == $userID) {
-                $id = $request['id'];
-                $userID = $id;
+            if (Auth::user()) {
+                $userID = Auth::user()->id;
                 $userAllAssets = UserAsset::where('userID', $userID)->with(['other', 'house', 'transportation'])->get();
-                $assetOther = [];
-                $assetHouse = [];
-                $assetTransportation = [];
+                $assetsOther = [];
+                $assetsRealEstates = [];
+                $assetVehicles = [];
                 foreach ($userAllAssets as $asset) {
                     if ($asset->other) {
                         $asset->other->status = $asset->status;
-                        array_push($assetOther, $asset->other);
+                        array_push($assetsOther, $asset->other);
                     }
                     if ($asset->house) {
                         $asset->house->status = $asset->status;
-                        array_push($assetHouse, $asset->house);
+                        array_push($assetsRealEstates, $asset->house);
                     }
                     if ($asset->transportation) {
                         $asset->transportation->status = $asset->status;
-                        array_push($assetTransportation, $asset->transportation);
+                        array_push($assetVehicles, $asset->transportation);
                     }
                 }
-                return response()->json(['Other' => $assetOther, 'House' => $assetHouse, 'Transportation' => $assetTransportation]);
+                return response()->json(['Other' => $assetsOther, 'Real-Estates' => $assetsRealEstates, 'Vehicles' => $assetVehicles]);
             } else {
                 return response()->json(['UnAuthoized'], 401);
             }
@@ -50,14 +48,13 @@ class AssetsController extends Controller
 
     function createNewAssets(Request $request)
     {
-        $userID = $request->id;
-        if(Auth::check() && Auth::user()->id == $userID)
+        if(Auth::user())
         {
             if ($request['other']) {
                 $request->validate(UserAsset::$rules);
                 $documentUrl = $request->file('document')->store('user_assets', ['disk' => 'public']);
                 $userAsset = new UserAsset;
-                $userAsset['userID'] = $request['id'];
+                $userAsset['userID'] = Auth::user()->id;
                 $userAsset['document'] = $documentUrl;
                 $userAsset->save();
                 $assetOther = new AssetsOther;
@@ -68,12 +65,12 @@ class AssetsController extends Controller
             } 
         }
         else return response()->json(['UnAuthoized'], 401);
-        if (Auth::check() && Auth::user()->id == $userID) {
+        if (Auth::user()) {
             if ($request['realestate']) {
                 $request->validate(UserAsset::$rules);
                 $documentUrl = $request->file('document')->store('user_assets', ['disk' => 'public']);
                 $userAsset = new UserAsset;
-                $userAsset['userID'] = $request['id'];
+                $userAsset['userID'] = Auth::user()->id;
                 $userAsset['document'] = $documentUrl;
                 $userAsset->save();
                 $assetRealEstate = new AssetsHouse;
@@ -84,12 +81,12 @@ class AssetsController extends Controller
             }
         }
          else return response()->json(['UnAuthoized'], 401);
-        if (Auth::check() && Auth::user()->id == $userID) {
+        if (Auth::user()) {
             if ($request['vehicle']) {
                 $request->validate(UserAsset::$rules);
                 $documentUrl = $request->file('document')->store('user_assets', ['disk' => 'public']);
                 $userAsset = new UserAsset;
-                $userAsset['userID'] = $request['id'];
+                $userAsset['userID'] = Auth::user()->id;
                 $userAsset['document'] = $documentUrl;
                 $userAsset->save();
                 $assetvehicle = new AssetsTransportation;
@@ -102,11 +99,13 @@ class AssetsController extends Controller
         else return response()->json(['UnAuthoized'], 401);
     }
 
-    function showAllUserAssetsToAdmin(Request $request)
+    function showAllUserAssetsToAdmin()
     {
         try{
-            $allAssets = UserAsset::all();
-            return response()->json(['userAssets' => $allAssets]);
+            if (Auth::user()) {
+                $allAssets = UserAsset::all();
+                return response()->json(['userAssets' => $allAssets]);
+            }
         } catch(QueryException $e) {
             return response()->json(['message' => 'An error occurred while processing your request.'], 500);
         } 
@@ -115,12 +114,12 @@ class AssetsController extends Controller
     function adminDocumentsConfirmation(Request $request)
     {
         try {
-            $id = $request->id;
-            $user = User::findOrFail($id); // check this Ali
-            $userAsset = UserAsset::findOrFail($request->assetId);
-            $userAsset->status = $request->status;
-            $userAsset->save();
-            return response()->json(['message'=>'done']);
+            if (Auth::user()) {
+                $userAsset = UserAsset::findOrFail($request->assetId);
+                $userAsset->status = $request->status;
+                $userAsset->save();
+                return response()->json(['message' => 'done']);
+            }
         } catch (QueryException $e) {
             return response()->json(['message' => 'An error occurred while processing your request.'], 500);
         }

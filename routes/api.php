@@ -28,6 +28,7 @@ Route::group(['prefix' => 'user'], function () {
     Route::get('verify/{verificationToken}', [UsersController::class, 'verifyEmail']);
     Route::post('/resetpasswordrequest', [UsersController::class, 'resetPasswordRequest']);
     Route::post('/resetpassword', [UsersController::class, 'resetPassword']);
+    Route::post('/refresh', [UsersController::class, 'refresh']);
 });
 
 
@@ -42,6 +43,7 @@ Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
     Route::delete('delete/{id}', [CardsController::class, 'destroy']);
     Route::get('/assets', [AssetsController::class, 'getUserAssets']);
     Route::post('/createasset', [AssetsController::class, 'createNewAssets']);
+    Route::get('/logout/{id}', [UsersController::class, 'logout'])->name('logout');
 });
 
 
