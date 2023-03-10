@@ -153,10 +153,13 @@ class UsersController extends Controller
         if (!$user) {
             return response()->json(['error' => 'Refresh token is invalid or has expired'], 400);
         }
-
+        
+        
         // Generate a new access token
         $accessToken = $user->createToken("API Access Token")->plainTextToken;
-
+        $expiration = Carbon::now()->addMinutes(60);
+        $accessTokenModel = $user->tokens()->where('name', 'API Access Token')->latest()->first();
+        $accessTokenModel->update(['expires_at' => $expiration]);
         // Update the refresh token and its expiration time
         $refreshToken = Str::random(60);
         $refreshTokenExpiration = Carbon::now()->addDays(7);
@@ -166,6 +169,7 @@ class UsersController extends Controller
 
         return response()->json([
             'access_token' => $accessToken,
+            'access_token_expiration' => $expiration,
             'refresh_token' => $refreshToken,
             'refresh_token_expiration' => $refreshTokenExpiration
         ], 200);
