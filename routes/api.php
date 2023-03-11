@@ -41,6 +41,7 @@ Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
     Route::get('/cards/{id}', [CardsController::class, 'showCardById']);
     Route::delete('delete/{id}', [CardsController::class, 'destroy']);
     Route::get('/assets', [AssetsController::class, 'getUserAssets']);
+    Route::get('/bill/show/{id}', [BillController::class, 'show']);
     Route::post('/createasset', [AssetsController::class, 'createNewAssets']);
     Route::get('/logout/{id}', [UsersController::class, 'logout'])->name('logout');
 });
@@ -49,7 +50,6 @@ Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
 Route::middleware(['auth:sanctum', 'can:isAdmin'])->prefix('/admin')->group(function () {
     Route::get('/bill', [BillController::class, 'index']);
     Route::post('/bill/add', [BillController::class, 'addBill']);
-    Route::get('/bill/show/{id}', [BillController::class, 'show']);
     Route::get('/users', [UsersController::class, 'users']);
     Route::get('/assets', [AssetsController::class, 'showAllUserAssetsToAdmin']);
     Route::patch('/assets/adminDocumentsConfirmation', [AssetsController::class, 'adminDocumentsConfirmation']);

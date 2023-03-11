@@ -22,8 +22,8 @@ class BillController extends Controller
     }
     public function show($id)
     {
-        try{
-            $bills =Bill::where('userID', $id)->get();
+        try {
+            $bills = Bill::where('userID', $id)->get();
             return response()->json( $bills,200);
         } catch(QueryException $e) {
             return response()->json(['message' => 'An error occurred while processing your request.'], 500);

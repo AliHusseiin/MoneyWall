@@ -59,7 +59,7 @@ class UsersController extends Controller
             if ($existingUser) {
                 return Response::json("Username already exists", 409);
             }
-            $user->accountNo = Str::randomNumber(11);
+            $user->accountNo = sprintf('%011d', mt_rand(0, 99999999999));
             $user->save();
             //Send verification email
             $URL = url('http://127.0.0.1:8000/api/user/verify/' . $verificationToken);
