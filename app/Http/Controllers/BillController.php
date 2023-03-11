@@ -14,8 +14,8 @@ class BillController extends Controller
     public function index()
     {
         try{
-            $userIds = User::all('id');
-            return response()->json($userIds, 200);
+            $bills = Bill::all();
+            return response()->json($bills, 200);
         }catch(QueryException $e) {
             return response()->json(['message' => 'An error occurred while processing your request.'], 500);
         }
@@ -29,6 +29,7 @@ class BillController extends Controller
             return response()->json(['message' => 'An error occurred while processing your request.'], 500);
         }
     }
+
     public function addBill(Request $request)
     {
         try{
