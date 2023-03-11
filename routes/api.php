@@ -44,6 +44,7 @@ Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
     Route::get('/bill/show/{id}', [BillController::class, 'show']);
     Route::post('/createasset', [AssetsController::class, 'createNewAssets']);
     Route::get('/logout/{id}', [UsersController::class, 'logout'])->name('logout');
+    Route::patch('/paybill', [BillController::class, 'payBill']);
 });
 
 
