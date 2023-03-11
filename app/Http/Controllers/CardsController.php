@@ -51,7 +51,7 @@ class CardsController extends Controller
     public function showCardById(Request $request)
     {
         $userID = $request->id;
-        if (Auth::check() && Auth::user()->id == $userID) {
+        // if (Auth::check() && Auth::user()->id == $userID) {
             $cards = Card::all()->where("userID", $userID);
             $allCards = [];
             foreach ($cards as $card) {
@@ -61,10 +61,10 @@ class CardsController extends Controller
                 $card['exp_date'] = Crypt::decrypt($card->exp_date);
                 array_push($allCards, $card);
             }
-            return response()->json(["User's Cards" => $allCards]);
-        } else {
-            return response()->json(["Unauthorized"], 401);
-        }
+            return response()->json(["cards" => $allCards]);
+        // } else {
+            // return response()->json(["Unauthorized"], 401);
+        // }
     }
 
     public function destroy(Request $request, $id)

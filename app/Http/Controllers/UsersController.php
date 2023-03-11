@@ -32,6 +32,20 @@ class UsersController extends Controller
             return response()->json(['message' => 'An error occurred while processing your request.'], 500);
         }
     }
+
+
+
+    function getUser($id)
+    {   
+        try {
+            $user = User::find($id);
+            return response()->json(["user" => $user], 200);
+        } catch (QueryException $e) {
+            return response()->json(['message' => 'An error occurred while processing your request.'], 500);
+        }
+    }
+
+
     function register(Request $request)
     {
         try {
@@ -113,6 +127,8 @@ class UsersController extends Controller
         }
         
     }
+
+
     function verifyEmail(Request $request)
     {
         $user = User::where('verification_email_token', $request->verificationToken)->first();
@@ -210,8 +226,9 @@ class UsersController extends Controller
     }
     function updateProfile($id, Request $request)
     {
+
         $userID = $request->id;
-        if (Auth::check() && Auth::user()->id == $userID) {
+       if (Auth::check() && Auth::user()->id == $userID) {
             try {
                 $user = User::find($id);
                 $user->fname = $request->firstName;
@@ -229,7 +246,7 @@ class UsersController extends Controller
                 return Response::json("Failed to update your profile", 400);
             }
         } else {
-            return response()->json(['message' => 'Not Authorized!'], 401);
+           return response()->json(['message' => 'Not Authorized!'], 401);
         }
     }
     function changePassword($id, Request $request)
@@ -279,25 +296,6 @@ class UsersController extends Controller
             }
         } catch (QueryException $e) {
             return Response::json("Failed to change your password", 400);
-        }
-    }
-    function logout(Request $request) {
-        //  Log out the user
-         try {
-            // Validate the user with sending userID
-            if (Auth::check() && Auth::user()->id == $request->id) {
-                // Logout the user
-                $user = $request->user();
-                $user->tokens()->delete();
-                $user->refresh_token = null;
-                $user->refresh_token_expiration = null;
-                $user->save();
-                return response()->json(['message' => 'User logged out successfully'], 200);
-            } else {
-                return response()->json(['message' => 'Unauthorized'], 401);
-            }
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'An error occurred while logging out the user'], 500);
         }
     }
 }

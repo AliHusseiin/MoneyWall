@@ -33,6 +33,7 @@ Route::group(['prefix' => 'user'], function () {
 
 
 Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
+    Route::get('/profile/show/{id}', [UsersController::class, 'getUser']);
     Route::patch('/profile/update/{id}', [UsersController::class, 'updateProfile']);
     Route::patch('/profile/changePassword/{id}', [UsersController::class, 'changePassword']);
     Route::delete('/profile/deleteAccount/{id}', [UsersController::class, 'deleteAccount']);
