@@ -7,7 +7,6 @@ use App\Mail\PasswordReset;
 use App\Models\AssetsTransportation;
 use App\Models\PasswordReset as ModelsPasswordReset;
 use App\Models\PasswordResetModel;
-use App\Models\TransactionAseet;
 use App\Models\TransactionAsset;
 use App\Models\TransactionMoney;
 use App\Models\User;
@@ -103,7 +102,7 @@ class TransactionController extends Controller
             $asset = UserAsset::findOrFail($assetID);
             $amount = $transaction->amount;
             $decision = $request->status;
-             if(($decision === 'accept' ) && ($buyer->balance >= $amount) )
+             if(($decision === 'accept' ) && ($buyer->balance >= $amount && $transaction->status === 'pending') )
              {
                 $buyer->balance -= $amount;
                 $seller->balance += $amount;
@@ -114,6 +113,11 @@ class TransactionController extends Controller
                 $transaction->save();
                 $asset->save();
                  return response()->json(['message' => 'Your Have accepted the offer from '.$seller->email.'!'], 200);
+             }
+             elseif($transaction->status !== 'pending')
+             {
+                return response()->json(['message' => 'somthing wrong '], 403);
+
              }
              else {
                 $transaction->status = 'rejected';
