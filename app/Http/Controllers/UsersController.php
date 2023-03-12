@@ -298,4 +298,6 @@ class UsersController extends Controller
             return Response::json("Failed to change your password", 400);
         }
     }
+
+    
 }
