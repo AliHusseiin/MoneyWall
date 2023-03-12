@@ -298,6 +298,23 @@ class UsersController extends Controller
             return Response::json("Failed to change your password", 400);
         }
     }
-
-    
+    function logout(Request $request) {
+        //  Log out the user
+         try {
+            // Validate the user with sending userID
+            if (Auth::check() && Auth::user()->id == $request->id) {
+                // Logout the user
+                $user = $request->user();
+                $user->tokens()->delete();
+                $user->refresh_token = null;
+                $user->refresh_token_expiration = null;
+                $user->save();
+                return response()->json(['message' => 'User logged out successfully'], 200);
+            } else {
+                return response()->json(['message' => 'Unauthorized'], 401);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'An error occurred while logging out the user'], 500);
+        }
+    }
 }

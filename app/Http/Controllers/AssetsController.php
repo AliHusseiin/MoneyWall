@@ -96,7 +96,7 @@ class AssetsController extends Controller
                 return response()->json(['message' => 'Done']);
             }
         }
-        else return response()->json(['UnAuthoized'], 401);
+        else return response()->json(['UnAuthorized'], 401);
     }
 
     function showAllUserAssetsToAdmin()

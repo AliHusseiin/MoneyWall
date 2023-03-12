@@ -7,6 +7,7 @@ use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BillController;
+use App\Http\Controllers\TransactionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +45,8 @@ Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
     Route::get('/bill/show/{id}', [BillController::class, 'show']);
     Route::post('/createasset', [AssetsController::class, 'createNewAssets']);
     Route::get('/logout/{id}', [UsersController::class, 'logout'])->name('logout');
+    Route::patch('/paybill', [BillController::class, 'payBill']);
+    Route::patch('/sendMoney', [TransactionController::class, 'sendMoney']);
 });
 
 
