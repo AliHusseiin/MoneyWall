@@ -50,6 +50,7 @@ Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
     Route::post('/sellassetrequest', [TransactionController::class, 'changeAssetEquityRequest']);
     Route::post('/changeassetequitey', [TransactionController::class, 'buyerDecisionOnAssetChangeEquityTransAction']);
     Route::get('/userassetstransactions', [TransactionController::class, "userAssetTransaction"]);
+    Route::get('/users', [UsersController::class, 'users']);
 
 
 
@@ -68,6 +69,7 @@ Route::middleware(['auth:sanctum', 'can:isAdmin'])->prefix('/admin')->group(func
     Route::get('/dashboard', [HelperController::class, 'index']);
     Route::get('/TransactionBills', [TransactionController::class, 'getTransBills']);
     Route::get('/TransactionMoney', [TransactionController::class, 'getTransMoney']);
+    Route::get('/TransactionAssets', [TransactionController::class, 'getTransAssets']);
 
 
 });

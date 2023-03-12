@@ -39,7 +39,7 @@ class HelperController extends Controller
                 , 200);
              }
         }catch(QueryException $e) {
-            return response()->json( 500);
+            return response()->json( 400);
         }
 
      
