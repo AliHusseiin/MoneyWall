@@ -57,12 +57,9 @@ Route::middleware(['auth:sanctum', 'can:isAdmin'])->prefix('/admin')->group(func
     Route::get('/users', [UsersController::class, 'users']);
     Route::get('/assets', [AssetsController::class, 'showAllUserAssetsToAdmin']);
     Route::patch('/assets/adminDocumentsConfirmation', [AssetsController::class, 'adminDocumentsConfirmation']);
-
     Route::get('/dashboard', [HelperController::class, 'index']);
-
     Route::get('/TransactionBills', [TransactionController::class, 'getTransBills']);
     Route::get('/TransactionMoney', [TransactionController::class, 'getTransMoney']);
-    Route::get('/TransactionAssets', [TransactionController::class, 'getTransAssets']);
 
 
 });

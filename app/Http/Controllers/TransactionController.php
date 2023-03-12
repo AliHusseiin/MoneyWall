@@ -64,20 +64,6 @@ class TransactionController extends Controller
 
 
 
-    public function getTransAssets()
-    {
-
-        try{
-            if (Auth::user()) {
-                $data = TransactionAssets::all();
-                return response()->json($data,200);         
-                }
-        }catch(QueryException $e) {
-            return response()->json( 500);
-        }
-
-
-    }
 
 
     public function getTransMoney()
