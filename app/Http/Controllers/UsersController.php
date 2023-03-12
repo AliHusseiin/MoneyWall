@@ -35,6 +35,9 @@ class UsersController extends Controller
 
 
 
+
+    
+
     function getUser($id)
     {   
         try {
