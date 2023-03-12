@@ -4,10 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Mail\EmailVerification;
 use App\Mail\PasswordReset;
+use App\Models\AssetsTransportation;
 use App\Models\PasswordReset as ModelsPasswordReset;
 use App\Models\PasswordResetModel;
+use App\Models\TransactionAseet;
+use App\Models\TransactionAsset;
 use App\Models\TransactionMoney;
 use App\Models\User;
+use App\Models\UserAsset;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
@@ -58,38 +62,33 @@ class TransactionController extends Controller
         }
     }
 
-    function changeAseetEquity(Request $request)
+
+    
+    function changeAseetEquityRequest(Request $request)
     {
-           try {
+           
             if (Auth::user()) {
-                $senderID = Auth::user()->id;
-                $receiverEmail = $request->receiverEmail;
-                $sender = User::where('id', $senderID)->first();
-                $receiver = User::where('email', $receiverEmail)->first();
-                $amount = $request->amount;
-                $description = $request->description;
-                if ($sender->balance >= $amount) {
-                    $sender->balance -= $request->amount;
-                    $receiver->balance += $request->amount;
-                    $sender->save();
-                    $receiver->save();
-                    $transaction = new TransactionMoney();
-                    $transaction->amount = $amount;
-                    $transaction->description = $description;
-                    $transaction->senderID = $senderID;
-                    $transaction->receiverID = $receiver->id;
-                    $transaction->save();
-                    return response()->json(['message' => 'Transaction Complete!'], 201);
-                } else {
-                    return Response::json("You don't have sufficient money to complete this transaction!", 400);
-                }
-            } else {
+                $sellerID = Auth::user()->id;
+                $buyerEmail = $request->buyerEmail; //selleer send buyer email in the request
+                $seller = User::where('id', $sellerID)->first();
+                $buyer = User::where('email', $buyerEmail)->first();
+                $buyerID = $buyer->id;
+
+                $assetTransAction = new TransactionAsset();
+                $assetTransAction->type->$request->assetType;
+                $assetTransAction->description = $request->description;
+                $assetTransAction->assetID = $request->assetID;
+                $assetTransAction->sellerID = $sellerID;
+                $assetTransAction->buyerID->$buyerID;
+                $assetTransAction->amount->$request->amount;
+                $assetTransAction->save();
+                return response()->json(['message' => 'Your Request has been sent to '.$buyerEmail.'!'], 201);
+                } 
+                else {
                 return response()->json(['UnAuthorized'], 401);
             }
-        } catch (QueryException $e) {
-            return response()->json(['message' => 'An error occurred while processing your request.'], 500);
-        }
-
-
-    }
+                
+     }
+         
+    
 }
