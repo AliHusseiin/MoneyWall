@@ -27,13 +27,13 @@ class HelperController extends Controller
              $usersCount=User::count(); 
              $billsCount=Bill::count(); 
              $assetsCount=UserAsset::count(); 
-             $transCount= $countTrans_assets+$countTrans_bills +$countTrans_money;
+            //  $transCount= $countTrans_assets+$countTrans_bills +$countTrans_money;
              
              return response()->json(
                 ['usersCount' =>  $usersCount,
                 'billsCount' =>   $billsCount,
-                'assetsCount' =>   $assetsCount,
-                'transCount' =>   $transCount
+                'assetsCount' =>   $assetsCount
+                // 'transCount' =>   $transCount
                 
                 ]
                 , 200);
