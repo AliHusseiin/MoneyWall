@@ -8,6 +8,7 @@ use App\Models\AssetsTransportation;
 use App\Models\PasswordReset as ModelsPasswordReset;
 use App\Models\PasswordResetModel;
 use App\Models\TransactionAsset;
+use App\Models\TransactionBills;
 use App\Models\TransactionMoney;
 use App\Models\User;
 use App\Models\UserAsset;
@@ -87,8 +88,38 @@ class TransactionController extends Controller
             else {
                 return response()->json(['UnAuthorized'], 401);
             }
+            
                 
      }
+      public function getTransMoney()
+    {
+
+        try{
+            if (Auth::user()) {
+                $data = TransactionMoney::all();
+                return response()->json($data,200);       
+                  }
+        }catch(QueryException $e) {
+            return response()->json( 500);
+        }
+
+
+    }
+
+    public function getTransBills()
+    {
+
+        try{
+            if (Auth::user()) {
+                $data = TransactionBills::all();
+                return response()->json($data,200);
+             }
+        }catch(QueryException $e) {
+            return response()->json( 500);
+        }
+
+
+    }
 
      function buyerDecisionOnAssetChangeEquityTransAction(Request $request)
      {
