@@ -57,4 +57,39 @@ class TransactionController extends Controller
             return response()->json(['message' => 'An error occurred while processing your request.'], 500);
         }
     }
+
+    function changeAseetEquity(Request $request)
+    {
+           try {
+            if (Auth::user()) {
+                $senderID = Auth::user()->id;
+                $receiverEmail = $request->receiverEmail;
+                $sender = User::where('id', $senderID)->first();
+                $receiver = User::where('email', $receiverEmail)->first();
+                $amount = $request->amount;
+                $description = $request->description;
+                if ($sender->balance >= $amount) {
+                    $sender->balance -= $request->amount;
+                    $receiver->balance += $request->amount;
+                    $sender->save();
+                    $receiver->save();
+                    $transaction = new TransactionMoney();
+                    $transaction->amount = $amount;
+                    $transaction->description = $description;
+                    $transaction->senderID = $senderID;
+                    $transaction->receiverID = $receiver->id;
+                    $transaction->save();
+                    return response()->json(['message' => 'Transaction Complete!'], 201);
+                } else {
+                    return Response::json("You don't have sufficient money to complete this transaction!", 400);
+                }
+            } else {
+                return response()->json(['UnAuthorized'], 401);
+            }
+        } catch (QueryException $e) {
+            return response()->json(['message' => 'An error occurred while processing your request.'], 500);
+        }
+
+
+    }
 }
