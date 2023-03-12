@@ -6,6 +6,8 @@ use App\Mail\EmailVerification;
 use App\Mail\PasswordReset;
 use App\Models\PasswordReset as ModelsPasswordReset;
 use App\Models\PasswordResetModel;
+use App\Models\TransactionAssets;
+use App\Models\TransactionBills;
 use App\Models\TransactionMoney;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -29,6 +31,7 @@ class TransactionController extends Controller
     {
         try {
             if (Auth::user()) {
+
                 $senderID = Auth::user()->id;
                 $receiverEmail = $request->receiverEmail;
                 $sender = User::where('id', $senderID)->first();
@@ -57,4 +60,49 @@ class TransactionController extends Controller
             return response()->json(['message' => 'An error occurred while processing your request.'], 500);
         }
     }
+
+
+
+
+
+
+    public function getTransMoney()
+    {
+
+        try{
+            if (Auth::user()) {
+                $data = TransactionMoney::all();
+                return response()->json($data,200);       
+                  }
+        }catch(QueryException $e) {
+            return response()->json( 500);
+        }
+
+
+    }
+
+    public function getTransBills()
+    {
+
+        try{
+            if (Auth::user()) {
+                $data = TransactionBills::all();
+                return response()->json($data,200);
+             }
+        }catch(QueryException $e) {
+            return response()->json( 500);
+        }
+
+
+    }
+
+
+
+
+
+
+
+
 }
+
+
