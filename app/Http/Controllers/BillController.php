@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bill;
+use App\Models\TransactionBills;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -51,10 +52,22 @@ class BillController extends Controller
     function payBill(Request $request) {
         try{
             if(Auth::user()) {
+
+
                 $billID = $request->billID;
                 $bill = Bill::where('id', $billID)->first();
                 $userID = Auth::user()->id;
                 $user = User::where('id', $userID)->first();
+
+                $transBill=new TransactionBills();
+
+                $transBill->amount =$bill->amount;
+                $transBill->description =$bill->description;
+                $transBill->userID =$userID;
+                $transBill->billID =$billID;
+                $transBill->save();
+
+
                 $userBalance = $user->balance;
                 if($userBalance >= $bill->amount) {
                     $user->balance -= $bill->amount;
