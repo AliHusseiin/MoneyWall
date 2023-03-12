@@ -64,7 +64,7 @@ class TransactionController extends Controller
 
 
     
-    function changeAseetEquityRequest(Request $request)
+    function changeAssetEquityRequest(Request $request)
     {
            
             if (Auth::user()) {
@@ -73,22 +73,65 @@ class TransactionController extends Controller
                 $seller = User::where('id', $sellerID)->first();
                 $buyer = User::where('email', $buyerEmail)->first();
                 $buyerID = $buyer->id;
-
+                
                 $assetTransAction = new TransactionAsset();
-                $assetTransAction->type->$request->assetType;
+                $assetTransAction->type =$request->assetType;
                 $assetTransAction->description = $request->description;
                 $assetTransAction->assetID = $request->assetID;
                 $assetTransAction->sellerID = $sellerID;
-                $assetTransAction->buyerID->$buyerID;
-                $assetTransAction->amount->$request->amount;
+                $assetTransAction->buyerID = $buyerID;
+                $assetTransAction->amount = $request->amount;
+                
                 $assetTransAction->save();
                 return response()->json(['message' => 'Your Request has been sent to '.$buyerEmail.'!'], 201);
                 } 
-                else {
+            else {
                 return response()->json(['UnAuthorized'], 401);
             }
                 
      }
-         
+
+     function buyerDecisionOnAssetChangeEquityTransAction(Request $request)
+     {
+        if (Auth::user()) {
+             $buyerID = Auth::user()->id;
+             $transaction = TransactionAsset::where('buyerID',$buyerID)->first();
+             $sellerID = $transaction->sellerID;
+             $buyer = User::where('id', $buyerID)->first();
+             $seller = User::where('id', $sellerID)->first();
+            $assetID = $transaction->assetID;
+            $asset = UserAsset::findOrFail($assetID);
+            $amount = $transaction->amount;
+            $decision = $request->status;
+             if(($decision === 'accept' ) && ($buyer->balance >= $amount) )
+             {
+                $buyer->balance -= $amount;
+                $seller->balance += $amount;
+                $asset->userID = $buyer->id;
+                $transaction->status = 'completed';
+                $seller->save();
+                $buyer->save();
+                $transaction->save();
+                $asset->save();
+                 return response()->json(['message' => 'Your Have accepted the offer from '.$seller->email.'!'], 200);
+             }
+             else {
+                $transaction->status = 'rejected';
+                $transaction->save();
+                 return response()->json(['message' => 'Your Have rejected the offer from '.$seller->email.'!'], 200);
+            }
+
+             }
+
+            
     
-}
+        else {
+            return response()->json(['UnAuthorized'], 401);
+            }
+
+        }
+
+
+     }
+         
+
