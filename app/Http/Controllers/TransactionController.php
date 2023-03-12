@@ -30,9 +30,9 @@ class TransactionController extends Controller
         try {
             if (Auth::user()) {
                 $senderID = Auth::user()->id;
-                $receiverID = $request->receiverID;
+                $receiverEmail = $request->receiverEmail;
                 $sender = User::where('id', $senderID)->first();
-                $receiver = User::where('id', $receiverID)->first();
+                $receiver = User::where('email', $receiverEmail)->first();
                 $amount = $request->amount;
                 $description = $request->description;
                 if ($sender->balance >= $amount) {
@@ -44,7 +44,7 @@ class TransactionController extends Controller
                     $transaction->amount = $amount;
                     $transaction->description = $description;
                     $transaction->senderID = $senderID;
-                    $transaction->receiverID = $receiverID;
+                    $transaction->receiverID = $receiver->id;
                     $transaction->save();
                     return response()->json(['message' => 'Transaction Complete!'], 201);
                 } else {
