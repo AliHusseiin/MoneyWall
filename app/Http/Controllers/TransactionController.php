@@ -135,6 +135,39 @@ class TransactionController extends Controller
 
         }
 
+        function userAssetTransaction()
+        {
+            if(Auth::user())
+            {
+            $userID = Auth::user()->id;
+            $transactionsAsAseller = TransactionAsset::where('sellerID', $userID)->get();;
+            $transactionsAsAbuyer =  TransactionAsset::where('buyerID',$userID)->get();
+
+            $userTransactions = [];
+            if($transactionsAsAseller)
+            {
+                foreach($transactionsAsAseller as $trasnsSeller)
+                {
+                    array_push($userTransactions, $trasnsSeller);
+                }
+
+            }
+             if($transactionsAsAbuyer)
+            {
+                foreach($transactionsAsAbuyer as $trasnsBuyer)
+                {
+                    array_push($userTransactions, $trasnsBuyer);
+                }
+
+            }
+            return response()->json(["userTransactions" => $userTransactions]);
+            }
+            else {
+            return response()->json(['UnAuthorized'], 401);
+            }
+
+        }
+
 
      }
          
