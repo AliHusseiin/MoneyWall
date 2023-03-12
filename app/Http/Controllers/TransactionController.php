@@ -140,7 +140,7 @@ class TransactionController extends Controller
             if(Auth::user())
             {
             $userID = Auth::user()->id;
-            $transactionsAsAseller = TransactionAsset::where('sellerID', $userID)->get();;
+            $transactionsAsAseller = TransactionAsset::where('sellerID', $userID)->get();
             $transactionsAsAbuyer =  TransactionAsset::where('buyerID',$userID)->get();
 
             $userTransactions = [];
