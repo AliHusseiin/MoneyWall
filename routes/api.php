@@ -49,7 +49,7 @@ Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
     Route::patch('/paybill', [BillController::class, 'payBill']);
     Route::post('/sellassetrequest', [TransactionController::class, 'changeAssetEquityRequest']);
     Route::post('/changeassetequitey', [TransactionController::class, 'buyerDecisionOnAssetChangeEquityTransAction']);
-
+    Route::get('/userassetstransactions', [TransactionController::class, "userAssetTransaction"]);
 
 
 
